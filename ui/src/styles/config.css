@@ -276,7 +276,7 @@
   padding: 6px 14px;
   border-radius: var(--radius-full);
   background: var(--accent-subtle);
-  border: 1px solid rgba(255, 77, 77, 0.3);
+  border: 1px solid var(--accent-muted);
   color: var(--accent);
   font-size: 12px;
   font-weight: 600;
@@ -290,7 +290,7 @@
 /* Diff Panel */
 .config-diff {
   margin: 18px 22px 0;
-  border: 1px solid rgba(255, 77, 77, 0.25);
+  border: 1px solid var(--accent-subtle);
   border-radius: var(--radius-lg);
   background: var(--accent-subtle);
   overflow: hidden;
@@ -466,7 +466,7 @@
 
 .config-subnav__item.active {
   color: var(--accent);
-  border-color: rgba(255, 77, 77, 0.4);
+  border-color: var(--accent-muted);
   background: var(--accent-subtle);
 }
 
