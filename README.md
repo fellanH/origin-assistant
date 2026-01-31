@@ -3,17 +3,6 @@
 > **Personal Assistant** is a fork of [OpenClaw](https://github.com/openclaw/openclaw): a **neutral, de-branded** build **optimized for non-technical people** — simpler setup, clearer copy, and minimal branding. For the official project, use npm (`npm install -g openclaw`) or see [openclaw/openclaw](https://github.com/openclaw/openclaw).
 
 <p align="center">
-    <picture>
-        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text-dark.png">
-        <img src="https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text.png" alt="OpenClaw" width="500">
-    </picture>
-</p>
-
-<p align="center">
-  <strong>EXFOLIATE! EXFOLIATE!</strong>
-</p>
-
-<p align="center">
   <a href="https://github.com/openclaw/openclaw/actions/workflows/ci.yml?branch=main"><img src="https://img.shields.io/github/actions/workflow/status/openclaw/openclaw/ci.yml?branch=main&style=for-the-badge" alt="CI status"></a>
   <a href="https://github.com/openclaw/openclaw/releases"><img src="https://img.shields.io/github/v/release/openclaw/openclaw?include_prereleases&style=for-the-badge" alt="GitHub release"></a>
   <a href="https://discord.gg/clawd"><img src="https://img.shields.io/discord/1456350064065904867?label=Discord&logo=discord&logoColor=white&color=5865F2&style=for-the-badge" alt="Discord"></a>
@@ -471,15 +460,11 @@ Use these when you’re past the onboarding flow and want the deeper reference.
 
 - [docs.openclaw.ai/gmail-pubsub](https://docs.openclaw.ai/automation/gmail-pubsub)
 
-## Molty
+## Upstream
 
-OpenClaw was built for **Molty**, a space lobster AI assistant. 🦞
-by Peter Steinberger and the community.
+Personal Assistant is a fork of [OpenClaw](https://github.com/openclaw/openclaw), created by Peter Steinberger and the community.
 
-- [openclaw.ai](https://openclaw.ai)
-- [soul.md](https://soul.md)
-- [steipete.me](https://steipete.me)
-- [@openclaw](https://x.com/openclaw)
+- [openclaw.ai](https://openclaw.ai) · [Docs](https://docs.openclaw.ai)
 
 ## Community
 
@@ -488,9 +473,9 @@ AI/vibe-coded PRs welcome! 🤖
 
 Special thanks to [Mario Zechner](https://mariozechner.at/) for his support and for
 [pi-mono](https://github.com/badlogic/pi-mono).
-Special thanks to Adam Doppelt for lobster.bot.
+Special thanks to Adam Doppelt.
 
-Thanks to all clawtributors:
+Thanks to all contributors:
 
 <p align="left">
   <a href="https://github.com/steipete"><img src="https://avatars.githubusercontent.com/u/58493?v=4&s=48" width="48" height="48" alt="steipete" title="steipete"/></a> <a href="https://github.com/cpojer"><img src="https://avatars.githubusercontent.com/u/13352?v=4&s=48" width="48" height="48" alt="cpojer" title="cpojer"/></a> <a href="https://github.com/plum-dawg"><img src="https://avatars.githubusercontent.com/u/5909950?v=4&s=48" width="48" height="48" alt="plum-dawg" title="plum-dawg"/></a> <a href="https://github.com/bohdanpodvirnyi"><img src="https://avatars.githubusercontent.com/u/31819391?v=4&s=48" width="48" height="48" alt="bohdanpodvirnyi" title="bohdanpodvirnyi"/></a> <a href="https://github.com/iHildy"><img src="https://avatars.githubusercontent.com/u/25069719?v=4&s=48" width="48" height="48" alt="iHildy" title="iHildy"/></a> <a href="https://github.com/jaydenfyi"><img src="https://avatars.githubusercontent.com/u/213395523?v=4&s=48" width="48" height="48" alt="jaydenfyi" title="jaydenfyi"/></a> <a href="https://github.com/joaohlisboa"><img src="https://avatars.githubusercontent.com/u/8200873?v=4&s=48" width="48" height="48" alt="joaohlisboa" title="joaohlisboa"/></a> <a href="https://github.com/mneves75"><img src="https://avatars.githubusercontent.com/u/2423436?v=4&s=48" width="48" height="48" alt="mneves75" title="mneves75"/></a> <a href="https://github.com/MatthieuBizien"><img src="https://avatars.githubusercontent.com/u/173090?v=4&s=48" width="48" height="48" alt="MatthieuBizien" title="MatthieuBizien"/></a> <a href="https://github.com/MaudeBot"><img src="https://avatars.githubusercontent.com/u/255777700?v=4&s=48" width="48" height="48" alt="MaudeBot" title="MaudeBot"/></a>

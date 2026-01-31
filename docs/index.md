@@ -1,15 +1,13 @@
 ---
-summary: "Top-level overview of OpenClaw, features, and purpose"
+summary: "Top-level overview of Personal Assistant, features, and purpose"
 read_when:
-  - Introducing OpenClaw to newcomers
-title: "OpenClaw"
+  - Introducing Personal Assistant to newcomers
+title: "Personal Assistant"
 ---
 
-# OpenClaw 🦞
+# Personal Assistant
 
 > **This doc set is for Personal Assistant** — a neutral, de-branded fork for non-technical users. Official docs: [docs.openclaw.ai](https://docs.openclaw.ai).
-
-> _"EXFOLIATE! EXFOLIATE!"_ — A space lobster, probably
 
 <p align="center">
     <img
@@ -231,19 +229,10 @@ Example:
   - [Security](/gateway/security)
   - [Troubleshooting](/gateway/troubleshooting)
 
-## The name
-
-**OpenClaw = CLAW + TARDIS** — because every space lobster needs a time-and-space machine.
-
----
-
-_"We're all just playing with our own prompts."_ — an AI, probably high on tokens
-
 ## Credits
 
-- **Peter Steinberger** ([@steipete](https://twitter.com/steipete)) — Creator, lobster whisperer
+- **Peter Steinberger** ([@steipete](https://twitter.com/steipete)) — Creator of OpenClaw (upstream)
 - **Mario Zechner** ([@badlogicc](https://twitter.com/badlogicgames)) — Pi creator, security pen-tester
-- **Clawd** — The space lobster who demanded a better name
 
 ## Core Contributors
 
@@ -252,8 +241,4 @@ _"We're all just playing with our own prompts."_ — an AI, probably high on tok
 
 ## License
 
-MIT — Free as a lobster in the ocean 🦞
-
----
-
-_"We're all just playing with our own prompts."_ — An AI, probably high on tokens
+MIT License

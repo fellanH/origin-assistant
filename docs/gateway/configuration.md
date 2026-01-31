@@ -1506,7 +1506,7 @@ See [Messages](/concepts/messages) for queueing, sessions, and streaming context
 ```json5
 {
   messages: {
-    responsePrefix: "🦞", // or "auto"
+    responsePrefix: "•", // or "auto"
     ackReaction: "👀",
     ackReactionScope: "group-mentions",
     removeAckAfterReply: false,
@@ -2878,7 +2878,7 @@ Defaults:
 - evaluateEnabled: `true` (set `false` to disable `act:evaluate` and `wait --fn`)
 - control service: loopback only (port derived from `gateway.port`, default `18791`)
 - CDP URL: `http://127.0.0.1:18792` (control service + 1, legacy single-profile)
-- profile color: `#FF4500` (lobster-orange)
+- profile color: `#FF4500` (accent)
 - Note: the control server is started by the running gateway (OpenClaw.app menubar, or `openclaw gateway`).
 - Auto-detect order: default browser if Chromium-based; otherwise Chrome → Brave → Edge → Chromium → Chrome Canary.
 
@@ -3385,4 +3385,4 @@ Cron is a Gateway-owned scheduler for wakeups and scheduled jobs. See [Cron jobs
 
 ---
 
-_Next: [Agent Runtime](/concepts/agent)_ 🦞
+_Next: [Agent Runtime](/concepts/agent)_
