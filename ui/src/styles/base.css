@@ -79,6 +79,13 @@
   --accent-2-muted: rgba(20, 184, 166, 0.7);
   --accent-2-subtle: rgba(20, 184, 166, 0.15);
 
+  /* Brand (muted blue) - WCAG AA: 6.8:1 on #0a0a0a */
+  --brand: #7c9fc9;
+  --brand-hover: #9ab5d6;
+  --brand-muted: rgba(124, 159, 201, 0.7);
+  --brand-subtle: rgba(124, 159, 201, 0.15);
+  --brand-glow: rgba(124, 159, 201, 0.25);
+
   /* Semantic: Success */
   --ok: #22c55e;
   --ok-muted: rgba(34, 197, 94, 0.75);
@@ -219,6 +226,13 @@
   --accent-2: #0d9488;
   --accent-2-muted: rgba(13, 148, 136, 0.75);
   --accent-2-subtle: rgba(13, 148, 136, 0.1);
+
+  /* Brand (muted blue) - WCAG AA: 4.7:1 on #ffffff */
+  --brand: #4a6fa5;
+  --brand-hover: #3d5d8a;
+  --brand-muted: rgba(74, 111, 165, 0.75);
+  --brand-subtle: rgba(74, 111, 165, 0.1);
+  --brand-glow: rgba(74, 111, 165, 0.15);
 
   /* Semantic: Success - WCAG AA: 6.3:1 on #ffffff */
   --ok: #166534;
