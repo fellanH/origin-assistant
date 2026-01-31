@@ -1,6 +1,6 @@
 # Contributing to OpenClaw
 
-> **This is a fork** (neutral, de-branded, for non-technical users). Bug fixes and features are better sent upstream: [openclaw/openclaw](https://github.com/openclaw/openclaw). The links below point to the official repo.
+> **This is Personal Assistant**, a fork of OpenClaw (neutral, de-branded, for non-technical users). Bug fixes and features are better sent upstream: [openclaw/openclaw](https://github.com/openclaw/openclaw). The links below point to the official repo.
 
 Welcome to the lobster tank! 🦞
 

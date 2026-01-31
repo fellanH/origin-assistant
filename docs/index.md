@@ -7,7 +7,7 @@ title: "OpenClaw"
 
 # OpenClaw 🦞
 
-> **This doc set is for a fork** aimed at a neutral, de-branded experience for non-technical users. Official docs: [docs.openclaw.ai](https://docs.openclaw.ai).
+> **This doc set is for Personal Assistant** — a neutral, de-branded fork for non-technical users. Official docs: [docs.openclaw.ai](https://docs.openclaw.ai).
 
 > _"EXFOLIATE! EXFOLIATE!"_ — A space lobster, probably
 

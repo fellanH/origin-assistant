@@ -1,7 +1,7 @@
 {
   "name": "openclaw",
   "version": "2026.1.30",
-  "description": "Neutral, de-branded fork of OpenClaw — personal AI assistant optimized for non-technical users. Upstream: openclaw/openclaw",
+  "description": "Personal Assistant — neutral, de-branded fork of OpenClaw for non-technical users. Upstream: openclaw/openclaw",
   "keywords": [],
   "license": "MIT",
   "author": "",

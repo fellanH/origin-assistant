@@ -1,6 +1,6 @@
-# 🦞 OpenClaw — Personal AI Assistant
+# Personal Assistant
 
-> **This is a personal fork** of [OpenClaw](https://github.com/openclaw/openclaw) with a different goal: a **neutral, de-branded** build **optimized for non-technical people** — simpler setup, clearer copy, and minimal branding. For the official project, use npm (`npm install -g openclaw`) or see [openclaw/openclaw](https://github.com/openclaw/openclaw).
+> **Personal Assistant** is a fork of [OpenClaw](https://github.com/openclaw/openclaw): a **neutral, de-branded** build **optimized for non-technical people** — simpler setup, clearer copy, and minimal branding. For the official project, use npm (`npm install -g openclaw`) or see [openclaw/openclaw](https://github.com/openclaw/openclaw).
 
 <p align="center">
     <picture>
@@ -20,12 +20,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
-**OpenClaw** is a _personal AI assistant_ you run on your own devices.
-It answers you on the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat), plus extension channels like BlueBubbles, Matrix, Zalo, and Zalo Personal. It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control. The Gateway is just the control plane — the product is the assistant.
+**Personal Assistant** is a personal AI assistant you run on your own devices. It answers you on the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat), plus extension channels like BlueBubbles, Matrix, Zalo, and Zalo Personal. It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control. The Gateway is just the control plane — the product is the assistant.
 
 If you want a personal, single-user assistant that feels local, fast, and always-on, this is it.
 
-**About this fork:** This repo is a **neutral, de-branded** variant aimed at **non-technical users** — simpler setup and wording, fewer assumptions about CLI/dev experience, and minimal product branding. It tracks upstream [OpenClaw](https://github.com/openclaw/openclaw) but is maintained separately.
+**About this fork:** This repo is **Personal Assistant** — a neutral, de-branded variant aimed at **non-technical users**, with simpler setup and wording and minimal branding. It tracks upstream [OpenClaw](https://github.com/openclaw/openclaw) but is maintained separately.
 
 [Website](https://openclaw.ai) · [Docs](https://docs.openclaw.ai) · [DeepWiki](https://deepwiki.com/openclaw/openclaw) · [Getting Started](https://docs.openclaw.ai/start/getting-started) · [Updating](https://docs.openclaw.ai/install/updating) · [Showcase](https://docs.openclaw.ai/start/showcase) · [FAQ](https://docs.openclaw.ai/start/faq) · [Wizard](https://docs.openclaw.ai/start/wizard) · [Nix](https://github.com/openclaw/nix-clawdbot) · [Docker](https://docs.openclaw.ai/install/docker) · [Discord](https://discord.gg/clawd)
 

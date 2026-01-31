@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-- **This repo is a fork:** neutral, de-branded build optimized for non-technical people. Upstream: https://github.com/openclaw/openclaw
+- **This repo is Personal Assistant:** a fork of OpenClaw — neutral, de-branded, optimized for non-technical people. Upstream: https://github.com/openclaw/openclaw
 - Repo: https://github.com/openclaw/openclaw
 - GitHub issues/comments/PR comments: use literal multiline strings or `-F - <<'EOF'` (or $'...') for real newlines; never embed "\\n".
 
