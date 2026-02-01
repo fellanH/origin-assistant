@@ -45,12 +45,12 @@
 .chat-sender-name {
   font-weight: 500;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .chat-group-timestamp {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--text-muted);
   opacity: 0.7;
 }
 
@@ -76,17 +76,17 @@
 
 .chat-avatar.assistant {
   background: var(--secondary);
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .chat-avatar.other {
   background: var(--secondary);
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .chat-avatar.tool {
   background: var(--secondary);
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 /* Image avatar support */
@@ -122,7 +122,7 @@ img.chat-avatar {
   right: 8px;
   border: 1px solid var(--border);
   background: var(--bg);
-  color: var(--muted);
+  color: var(--text-muted);
   border-radius: var(--radius-md);
   padding: 4px 6px;
   font-size: 14px;
@@ -238,11 +238,12 @@ img.chat-avatar {
 }
 
 .chat-group.user .chat-bubble:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--accent-glow);
 }
 
 :root[data-theme="light"] .chat-group.user .chat-bubble:hover {
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--accent-subtle);
+  opacity: 0.85;
 }
 
 /* Streaming animation */

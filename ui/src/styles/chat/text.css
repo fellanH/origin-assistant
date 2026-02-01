@@ -6,16 +6,11 @@
   margin-bottom: 10px;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px dashed rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--muted);
+  border: 1px dashed var(--border);
+  background: var(--secondary);
+  color: var(--text-muted);
   font-size: 12px;
   line-height: 1.4;
-}
-
-:root[data-theme="light"] .chat-thinking {
-  border-color: rgba(16, 24, 40, 0.25);
-  background: rgba(16, 24, 40, 0.04);
 }
 
 .chat-text {
@@ -57,13 +52,15 @@
 }
 
 .chat-text :where(:not(pre) > code) {
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--secondary);
+  border: 1px solid var(--border);
   padding: 0.15em 0.4em;
   border-radius: 4px;
 }
 
 .chat-text :where(pre) {
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--secondary);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px 12px;
   overflow-x: auto;
@@ -78,8 +75,8 @@
   border-left: 3px solid var(--border-strong);
   padding-left: 12px;
   margin-left: 0;
-  color: var(--muted);
-  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted);
+  background: var(--card-highlight);
   padding: 8px 12px;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
@@ -87,34 +84,22 @@
 .chat-text :where(blockquote blockquote) {
   margin-top: 8px;
   border-left-color: var(--border-hover);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--secondary);
 }
 
 .chat-text :where(blockquote blockquote blockquote) {
   border-left-color: var(--muted-strong);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-:root[data-theme="light"] .chat-text :where(blockquote) {
-  background: rgba(0, 0, 0, 0.03);
-}
-
-:root[data-theme="light"] .chat-text :where(blockquote blockquote) {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-:root[data-theme="light"] .chat-text :where(blockquote blockquote blockquote) {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--bg-hover);
 }
 
 :root[data-theme="light"] .chat-text :where(:not(pre) > code) {
-  background: rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
 }
 
 :root[data-theme="light"] .chat-text :where(pre) {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
 }
 
 .chat-text :where(hr) {

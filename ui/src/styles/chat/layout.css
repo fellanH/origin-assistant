@@ -70,7 +70,7 @@
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--panel);
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
@@ -152,8 +152,8 @@
   height: 20px;
   border-radius: 50%;
   border: none;
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
+  background: var(--muted-strong);
+  color: var(--foreground);
   font-size: 12px;
   line-height: 1;
   cursor: pointer;
@@ -169,7 +169,7 @@
 }
 
 .chat-attachment__remove:hover {
-  background: rgba(220, 38, 38, 0.9);
+  background: var(--destructive);
 }
 
 .chat-attachment__remove svg {
@@ -182,17 +182,13 @@
 
 /* Light theme attachment overrides */
 :root[data-theme="light"] .chat-attachments {
-  background: #f8fafc;
-  border-color: rgba(16, 24, 40, 0.1);
+  background: var(--bg-muted);
+  border-color: var(--border);
 }
 
 :root[data-theme="light"] .chat-attachment {
-  border-color: rgba(16, 24, 40, 0.15);
-  background: #fff;
-}
-
-:root[data-theme="light"] .chat-attachment__remove {
-  background: rgba(0, 0, 0, 0.6);
+  border-color: var(--border);
+  background: var(--card);
 }
 
 /* Message images (sent images displayed in chat) */
@@ -313,36 +309,32 @@
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--secondary);
 }
 
 /* Controls separator */
 .chat-controls__separator {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--muted-foreground);
   font-size: 18px;
   margin: 0 8px;
   font-weight: 300;
 }
 
-:root[data-theme="light"] .chat-controls__separator {
-  color: rgba(16, 24, 40, 0.3);
-}
-
 .btn--icon:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
 }
 
 /* Light theme icon button overrides */
 :root[data-theme="light"] .btn--icon {
-  background: #ffffff;
+  background: var(--card);
   border-color: var(--border);
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
-  color: var(--muted);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-muted);
 }
 
 :root[data-theme="light"] .btn--icon:hover {
-  background: #ffffff;
+  background: var(--bg-hover);
   border-color: var(--border-strong);
   color: var(--text);
 }
@@ -369,15 +361,15 @@
   gap: 4px;
   font-size: 12px;
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--secondary);
   border-radius: 6px;
   border: 1px solid var(--border);
 }
 
 /* Light theme thinking indicator override */
 :root[data-theme="light"] .chat-controls__thinking {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(16, 24, 40, 0.15);
+  background: var(--card);
+  border-color: var(--border);
 }
 
 @media (max-width: 640px) {

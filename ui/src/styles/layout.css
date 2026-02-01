@@ -142,7 +142,7 @@
 .brand-sub {
   font-size: 10px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--text-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   line-height: 1;
@@ -256,7 +256,7 @@
   justify-content: center;
   width: 18px;
   height: 18px;
-  color: var(--muted);
+  color: var(--text-muted);
   transition: color var(--duration-fast) ease;
 }
 
@@ -304,7 +304,7 @@
   padding: 6px 10px;
   font-size: 11px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--text-muted);
   margin-bottom: 4px;
   background: transparent;
   border: none;
@@ -326,7 +326,7 @@
 }
 
 .nav-label--static:hover {
-  color: var(--muted);
+  color: var(--text-muted);
   background: transparent;
 }
 
@@ -355,7 +355,7 @@
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   background: transparent;
-  color: var(--muted);
+  color: var(--text-muted);
   cursor: pointer;
   text-decoration: none;
   transition:
@@ -469,7 +469,7 @@
 }
 
 .page-sub {
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 14px;
   font-weight: 400;
   margin-top: 6px;

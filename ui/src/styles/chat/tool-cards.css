@@ -118,14 +118,14 @@
 
 .chat-tool-card__detail {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
 /* Collapsed preview - fixed height with truncation */
 .chat-tool-card__preview {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--text-muted);
   margin-top: 8px;
   padding: 8px 10px;
   background: var(--secondary);
@@ -172,7 +172,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--muted);
+  background: var(--muted-foreground);
   animation: reading-pulse 1.4s ease-in-out infinite;
 }
 

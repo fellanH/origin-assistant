@@ -66,7 +66,7 @@
   transform: translateY(-50%);
   width: 16px;
   height: 16px;
-  color: var(--muted);
+  color: var(--text-muted);
   pointer-events: none;
 }
 
@@ -85,7 +85,7 @@
 }
 
 .config-search__input::placeholder {
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .config-search__input:focus {
@@ -112,7 +112,7 @@
   border: none;
   border-radius: var(--radius-full);
   background: var(--bg-hover);
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 14px;
   line-height: 1;
   cursor: pointer;
@@ -145,7 +145,7 @@
   border: none;
   border-radius: var(--radius-md);
   background: transparent;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 500;
   text-align: left;
@@ -217,7 +217,7 @@
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -284,7 +284,7 @@
 
 .config-status {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 /* Diff Panel */
@@ -368,7 +368,7 @@
 }
 
 .config-diff__arrow {
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .config-diff__to {
@@ -422,7 +422,7 @@
 
 .config-section-hero__desc {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 /* Subsection Nav */
@@ -445,7 +445,7 @@
   padding: 7px 14px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--text-muted);
   background: var(--bg-elevated);
   cursor: pointer;
   transition:
@@ -492,7 +492,7 @@
   justify-content: center;
   gap: 18px;
   padding: 80px 24px;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .config-loading__spinner {
@@ -527,7 +527,7 @@
 }
 
 .config-empty__text {
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 15px;
 }
 
@@ -599,7 +599,7 @@
 .config-section-card__desc {
   margin: 5px 0 0;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--text-muted);
   line-height: 1.45;
 }
 
@@ -636,7 +636,7 @@
 
 .cfg-field__help {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
   line-height: 1.45;
 }
 
@@ -666,7 +666,7 @@
 }
 
 .cfg-input::placeholder {
-  color: var(--muted);
+  color: var(--text-muted);
   opacity: 0.7;
 }
 
@@ -694,7 +694,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--bg-elevated);
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 14px;
   cursor: pointer;
   transition:
@@ -848,7 +848,7 @@
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -923,7 +923,7 @@
   display: block;
   margin-top: 3px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
   line-height: 1.45;
 }
 
@@ -1025,7 +1025,7 @@
 .cfg-object__chevron {
   width: 18px;
   height: 18px;
-  color: var(--muted);
+  color: var(--text-muted);
   transition: transform var(--duration-normal) var(--ease-out);
 }
 
@@ -1041,7 +1041,7 @@
 .cfg-object__help {
   padding: 0 18px 14px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
   border-bottom: 1px solid var(--border);
 }
 
@@ -1080,7 +1080,7 @@
 
 .cfg-array__count {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
   padding: 4px 10px;
   background: var(--bg-elevated);
   border-radius: var(--radius-full);
@@ -1127,14 +1127,14 @@
 .cfg-array__help {
   padding: 12px 18px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-muted);
   border-bottom: 1px solid var(--border);
 }
 
 .cfg-array__empty {
   padding: 36px 18px;
   text-align: center;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 13px;
 }
 
@@ -1164,7 +1164,7 @@
 .cfg-array__item-index {
   font-size: 11px;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -1178,7 +1178,7 @@
   border: none;
   border-radius: var(--radius-md);
   background: transparent;
-  color: var(--muted);
+  color: var(--text-muted);
   cursor: pointer;
   transition:
     background var(--duration-fast) ease,
@@ -1228,7 +1228,7 @@
 .cfg-map__label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .cfg-map__add {
@@ -1263,7 +1263,7 @@
 .cfg-map__empty {
   padding: 28px 18px;
   text-align: center;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 13px;
 }
 
@@ -1297,7 +1297,7 @@
   border: none;
   border-radius: var(--radius-md);
   background: transparent;
-  color: var(--muted);
+  color: var(--text-muted);
   cursor: pointer;
   transition:
     background var(--duration-fast) ease,
