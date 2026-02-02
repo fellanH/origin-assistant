@@ -16,7 +16,7 @@ import {
   ToolOutput,
   type ToolPart,
 } from "./tool";
-import { SubagentCard } from "./subagent-card";
+import { SubagentArtifact } from "./subagent-artifact";
 import { InlineErrorBoundary, CompactErrorBoundary } from "@/components/error-boundary";
 
 type MessagePartsProps = {
@@ -191,19 +191,17 @@ export function MessageParts({
             </InlineErrorBoundary>
           ))}
 
-        {/* Render active subagents */}
+        {/* Render all subagents (including completed) */}
         {subagents &&
-          Array.from(subagents.values())
-            .filter((s) => s.status === "spawning" || s.status === "running")
-            .map((sub) => (
-              <CompactErrorBoundary key={sub.toolCallId} label="Subagent">
-                <SubagentCard
-                  subagent={sub}
-                  onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
-                  onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
-                />
-              </CompactErrorBoundary>
-            ))}
+          Array.from(subagents.values()).map((sub) => (
+            <CompactErrorBoundary key={sub.toolCallId} label="Subagent">
+              <SubagentArtifact
+                subagent={sub}
+                onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
+                onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
+              />
+            </CompactErrorBoundary>
+          ))}
       </>
     );
   }
@@ -236,17 +234,15 @@ export function MessageParts({
           </InlineErrorBoundary>
         ))}
       {subagents &&
-        Array.from(subagents.values())
-          .filter((s) => s.status === "spawning" || s.status === "running")
-          .map((sub) => (
-            <CompactErrorBoundary key={sub.toolCallId} label="Subagent">
-              <SubagentCard
-                subagent={sub}
-                onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
-                onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
-              />
-            </CompactErrorBoundary>
-          ))}
+        Array.from(subagents.values()).map((sub) => (
+          <CompactErrorBoundary key={sub.toolCallId} label="Subagent">
+            <SubagentArtifact
+              subagent={sub}
+              onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
+              onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
+            />
+          </CompactErrorBoundary>
+        ))}
     </>
   );
 }

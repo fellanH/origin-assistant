@@ -146,7 +146,7 @@ Replace the current `subagent-card.tsx` with a new `SubagentArtifact` component 
 
 ## Task 6: Update message-parts.tsx Integration
 
-**Status:** PENDING
+**Status:** COMPLETE ✅
 **Depends on:** Task 1-5
 
 **Goal:** Replace SubagentCard with SubagentArtifact in message rendering.
@@ -155,11 +155,13 @@ Replace the current `subagent-card.tsx` with a new `SubagentArtifact` component 
 - `src/components/ai-elements/message-parts.tsx`
 
 **Acceptance criteria:**
-- [ ] Import SubagentArtifact instead of SubagentCard
-- [ ] Render ALL subagents (not just active ones)
-- [ ] Completed subagents show with full artifact UI
-- [ ] Error boundaries still wrap the component
-- [ ] No visual regression for running subagents
+- [x] Import SubagentArtifact instead of SubagentCard
+- [x] Render ALL subagents (not just active ones)
+- [x] Completed subagents show with full artifact UI
+- [x] Error boundaries still wrap the component
+- [x] No visual regression for running subagents
+
+**Completed:** 2026-02-02 — Replaced SubagentCard with SubagentArtifact in both rendering locations, removed status filter to show all subagents
 
 ---
 
@@ -230,6 +232,23 @@ After all tasks complete:
 - [ ] Refresh page, verify subagent artifact persists
 - [ ] Test error state (stop a running subagent)
 - [ ] Test multiple concurrent subagents
+
+---
+
+## Merge Verification
+
+**Status:** COMPLETE ✅
+**Date:** 2026-02-02
+
+Tasks 1-5 ran in parallel and all committed successfully. Post-merge verification confirmed:
+
+- ✅ All features present in `subagent-artifact.tsx`
+- ✅ Correct section order: Header → TaskDescription → ResultSummary → HistoryPreview → Actions
+- ✅ `resultSummary?: string` present in SubagentState (use-gateway.ts)
+- ✅ `pnpm build` passes with no errors
+- ✅ No duplicate sections or broken imports
+
+No merge conflicts or missing pieces detected. Component is ready for Task 6 (message-parts integration).
 
 ---
 
