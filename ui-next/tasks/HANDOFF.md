@@ -193,6 +193,64 @@ const {
 
 **Output:** `tasks/task-5.md`
 
+### Task 6: Create ChatMessageList Component (2026-02-02)
+
+Created `ChatMessageList` component to extract message list rendering from `page.tsx` with smart animation strategy.
+
+**Problem:** In `page.tsx`, all messages animated on render including history load, causing visual jumpiness when switching sessions or loading history.
+
+**Solution:**
+- Created `src/components/chat-message-list.tsx` with animation tracking
+- Uses refs to track: `initialLoadComplete`, `previousMessageCount`, `currentSessionKey`
+- On session change: reset animation tracking
+- On history load: mark initial load complete after first render with history
+- Animation logic: only messages added after initial load animate in
+
+**Animation Strategy:**
+```typescript
+const getMessageAnimation = (index: number) => {
+  // Don't animate during initial load
+  if (!initialLoadComplete.current) {
+    return { initial: false };
+  }
+  // Only animate messages added after initial load
+  if (index >= previousMessageCount.current) {
+    return {
+      initial: { opacity: 0, y: 10 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.2 },
+    };
+  }
+  // History messages: no animation
+  return { initial: false };
+};
+```
+
+**Features:**
+- Uses `useChatContext` for all session data (messages, status, toolExecutions, subagents, etc.)
+- Memoized with `memo()` to prevent unnecessary re-renders
+- Handles loading state (ConversationSkeleton)
+- Handles empty state (EmptyState with suggestions)
+- Renders streaming content, thinking indicator, and queued messages
+- Supports subagent actions: view history, stop, navigate
+
+**Props:**
+```typescript
+interface ChatMessageListProps {
+  onCopy?: (content: string, messageId: string) => void;
+  onRegenerate?: () => void;
+  copiedId?: string | null;
+  onSuggestionClick?: (suggestion: string) => void;
+  onSubagentViewHistory?: (subagent: SubagentState) => void;
+  onSubagentStop?: (subagent: SubagentState) => void;
+  onSubagentNavigateToSession?: (sessionKey: string) => void;
+}
+```
+
+**Result:** History loads instantly without animation cascade. Only new messages sent during the session animate in smoothly.
+
+**Output:** `tasks/task-6.md`
+
 ## In Progress
 
 *None*
