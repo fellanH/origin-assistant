@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDownIcon, ChevronRightIcon, Trash2Icon, SparklesIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronRightIcon, Trash2Icon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getSessionIcon,
@@ -136,13 +136,12 @@ export function SessionTreeItem({
           "w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm",
           isActive ? "bg-primary-foreground/20" : "bg-accent/50"
         )}>
-          {parsed.type === "subagent" ? icon : <SparklesIcon className="w-3.5 h-3.5" />}
+          {icon}
         </div>
         
         {/* Name and meta info */}
         <div className="flex-1 min-w-0">
           <div className="text-sm font-medium truncate flex items-center gap-2">
-            {parsed.type !== "subagent" && <span>{icon}</span>}
             <span className="truncate">{displayName}</span>
             {/* Child count when collapsed */}
             {hasChildren && !isExpanded && (
