@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useImperativeHandle, forwardRef, useMemo } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
@@ -301,36 +302,67 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
 
         {/* Session list */}
         <div className="flex-1 overflow-y-auto p-2">
-          {loading && sessions.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-muted-foreground text-sm">
-              Loading...
-            </div>
-          ) : sessions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center px-4">
-              <MessageSquareIcon className="w-8 h-8 text-muted-foreground/50 mb-2" />
-              <p className="text-sm text-muted-foreground">No sessions yet</p>
-              <button
-                onClick={onNewSession}
-                className="mt-3 text-sm text-primary hover:underline"
+          <AnimatePresence mode="wait">
+            {loading && sessions.length === 0 ? (
+              <motion.div
+                key="loading"
+                className="flex flex-col gap-2 py-4 px-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
               >
-                Start a new chat
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-0.5">
-              {sessionTree.map((node) => (
-                <SessionTreeItem
-                  key={node.session.key}
-                  node={node}
-                  currentSessionKey={currentSessionKey}
-                  onSessionSelect={handleSessionSelect}
-                  onDelete={handleDeleteSession}
-                  onToggleExpand={handleToggleExpand}
-                  expandedKeys={expandedKeys}
-                />
-              ))}
-            </div>
-          )}
+                {/* Session skeleton */}
+                {[1, 2, 3].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="h-10 rounded-lg bg-muted/30"
+                    animate={{ opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
+                  />
+                ))}
+              </motion.div>
+            ) : sessions.length === 0 ? (
+              <motion.div
+                key="empty"
+                className="flex flex-col items-center justify-center py-8 text-center px-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <MessageSquareIcon className="w-8 h-8 text-muted-foreground/50 mb-2" />
+                <p className="text-sm text-muted-foreground">No sessions yet</p>
+                <button
+                  onClick={onNewSession}
+                  className="mt-3 text-sm text-primary hover:underline"
+                >
+                  Start a new chat
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="sessions"
+                className="space-y-0.5"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {sessionTree.map((node) => (
+                  <SessionTreeItem
+                    key={node.session.key}
+                    node={node}
+                    currentSessionKey={currentSessionKey}
+                    onSessionSelect={handleSessionSelect}
+                    onDelete={handleDeleteSession}
+                    onToggleExpand={handleToggleExpand}
+                    expandedKeys={expandedKeys}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Custom footer slot (chat input) - only show if not in overlay mode or explicitly passed */}

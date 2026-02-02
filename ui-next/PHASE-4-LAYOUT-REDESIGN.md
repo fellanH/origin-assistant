@@ -211,7 +211,7 @@ Keep header at top, just move input.
 - ❌ Still wastes vertical space
 - ❌ Inconsistent with "sidebar-centric" goal
 
-**Decision**: Full sidebar integration (proposed layout) is cleanest.
+**Decision**: Header in sidebar, input in main content area (centered). Input placement in sidebar felt awkward — center screen is more natural.
 
 ---
 

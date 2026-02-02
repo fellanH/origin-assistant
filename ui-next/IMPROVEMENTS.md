@@ -60,6 +60,7 @@
 
 | Idea | Description |
 |------|-------------|
+| **Projects sidebar section** | Show current projects with: main docs, start/test commands, published site links. Could use `<Artifact>` component for document display. See [artifact docs](https://ai-sdk.dev/elements/components/artifact) |
 | **Chat Navigator / Minimap** | Quick navigation for long chat sessions — similar to VS Code's minimap or Notion's table of contents. Could show message summaries, tool calls, or key moments as clickable anchors. Helps jump around long conversations. |
 | **Brain X-Ray mode** | Real-time visual trace of data flowing through the app — toggleable "behind the scenes" view showing gateway events, tool calls, token flow, processing states. Could be panel overlay, separate window, or external dev tool. |
 
@@ -71,6 +72,7 @@
 | **Context & data flow analysis** | Deep dive on state management, gateway data flow, caching |
 | **Task estimation strategy** | Differentiate between human vs agent estimates |
 | **Context management & transparency** | How to surface context usage to users, compaction strategies, context-aware UI hints |
+| **Cross-session context / parallel mains** | How to handle multiple parallel main chats for different topics — avoid bloating one context with unrelated questions. Session branching, topic isolation, shared memory across sessions. |
 
 ---
 

@@ -273,6 +273,11 @@ function generateSessionLabel(sessionKey: string, firstMessage?: string): string
   if (parts.length >= 3) {
     const sessionId = parts[2];
     if (sessionId === "main") return "Main Session";
+    // New chat sessions: agent:main:<timestamp> pattern (3 parts, not "main")
+    // These are user-initiated chats, show friendly label
+    if (parts[0] === "agent" && parts.length === 3) {
+      return "New Chat";
+    }
     return `Session ${sessionId.slice(0, 6)}`;
   }
   return `Session ${sessionKey.slice(0, 6)}`;

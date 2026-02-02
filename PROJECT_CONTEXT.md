@@ -5,14 +5,21 @@
 ## Current State
 
 **ui-next (Next.js)** — Primary focus
-- ✅ Phase 1-4 complete (message model, tool events, session tree, layout redesign)
+- ✅ Phase 1-3 complete (message model, tool events, session tree)
 - ✅ 48 AI Elements components implemented
-- ✅ Sidebar-centric layout (header + input in sidebar, full-height chat)
-- ✅ Context/token display in sidebar header
+- ✅ Context/token display in header
 - ✅ Subagent tracking with live status
-- Build passing, ready for testing
+- ⚠️ Some polish bugs (see BUGS-AND-POLISH.md)
+- Build passing
 
-**Next up:** Responsive behavior (mobile)
+**Next up:** Fix bugs, then Phase 4 layout redesign
+
+## Active Bugs
+
+1. **New session label** — Shows "agent session" instead of proper main session label
+2. **Message display** — Occasional stray brackets, missing formatting (intermittent)
+
+See `ui-next/BUGS-AND-POLISH.md` for details.
 
 ## Recent Decisions
 
@@ -20,20 +27,33 @@
 - Dual-stream architecture (chat + agent events)
 - Hierarchical session sidebar (subagents nest under parents)
 - Added proxy rule: always verify Claude Proxy before spawning subagents
+- PROJECT_CONTEXT.md pattern for session handoffs
 
 ## Pickup
 
-- [ ] Test sidebar-centric layout with live gateway
-- [ ] Add responsive behavior (mobile sidebar overlay)
+- [ ] Debug session label issue
+- [ ] Debug message display issues
+- [ ] Then Phase 4 layout redesign OR Neonode work
+
+## TODO: Rebrand to Cortana
+
+Rename from "OpenClaw fork" to "Cortana" throughout:
+- [ ] Package names (`package.json`)
+- [ ] UI strings and branding
+- [ ] Documentation references
+- [ ] Directory name? (`openclaw-fork` → `cortana`?)
+- [ ] README and docs
+
+*Some rebranding already done — needs thorough pass.*
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `ui-next/IMPROVEMENTS.md` | Full status + backlog |
-| `ui-next/src/app/page.tsx` | Main chat UI (sidebar-centric) |
-| `ui-next/src/components/sidebar-header.tsx` | Sidebar header (logo, status, settings) |
-| `ui-next/src/components/sidebar-input.tsx` | Sidebar chat input |
+| `ui-next/BUGS-AND-POLISH.md` | Active bugs + polish items |
+| `ui-next/PHASE-4-LAYOUT-REDESIGN.md` | Next phase plan |
+| `ui-next/src/app/page.tsx` | Main chat UI |
 | `ui-next/src/lib/use-gateway.ts` | Gateway hooks |
 
 ## Open Questions
@@ -42,4 +62,4 @@
 - Session tree expand/collapse state — sync across devices?
 
 ---
-_Last updated: 2026-02-02 12:30_
+_Last updated: 2026-02-02 12:47_

@@ -1,5 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import type { HTMLAttributes } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface LoaderIconProps {
   size?: number;
@@ -79,18 +81,106 @@ const LoaderIcon = ({ size = 16 }: LoaderIconProps) => (
   </svg>
 );
 
-export type LoaderProps = HTMLAttributes<HTMLDivElement> & {
+export type LoaderVariant = "spinner" | "thinking" | "dots";
+
+export type LoaderProps = {
+  className?: string;
   size?: number;
+  /** Variant style - spinner (default), thinking (with text), or dots */
+  variant?: LoaderVariant;
+  /** Optional label for thinking variant */
+  label?: string;
 };
 
-export const Loader = ({ className, size = 16, ...props }: LoaderProps) => (
-  <div
-    className={cn(
-      "inline-flex animate-spin items-center justify-center",
-      className
-    )}
-    {...props}
+/**
+ * Animated thinking dots
+ */
+const ThinkingDots = () => (
+  <span className="inline-flex gap-1">
+    {[0, 1, 2].map((i) => (
+      <motion.span
+        key={i}
+        className="w-1.5 h-1.5 rounded-full bg-current"
+        initial={{ opacity: 0.3 }}
+        animate={{ opacity: [0.3, 1, 0.3] }}
+        transition={{
+          duration: 1,
+          repeat: Infinity,
+          delay: i * 0.2,
+        }}
+      />
+    ))}
+  </span>
+);
+
+/**
+ * Spinner with fade-in animation
+ */
+const AnimatedSpinner = ({ size }: { size: number }) => (
+  <motion.div
+    className="animate-spin"
+    initial={{ opacity: 0, scale: 0.8 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.8 }}
+    transition={{ duration: 0.2 }}
   >
     <LoaderIcon size={size} />
-  </div>
+  </motion.div>
 );
+
+export const Loader = ({
+  className,
+  size = 16,
+  variant = "spinner",
+  label,
+}: LoaderProps) => {
+  if (variant === "dots") {
+    return (
+      <motion.div
+        className={cn(
+          "inline-flex items-center justify-center text-muted-foreground",
+          className
+        )}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+      >
+        <ThinkingDots />
+      </motion.div>
+    );
+  }
+
+  if (variant === "thinking") {
+    return (
+      <motion.div
+        className={cn(
+          "flex items-center gap-3 py-3 text-muted-foreground",
+          className
+        )}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+      >
+        <AnimatedSpinner size={size} />
+        <span className="text-sm">{label || "Thinking"}<ThinkingDots /></span>
+      </motion.div>
+    );
+  }
+
+  // Default spinner
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        className={cn("inline-flex items-center justify-center", className)}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+      >
+        <AnimatedSpinner size={size} />
+      </motion.div>
+    </AnimatePresence>
+  );
+};

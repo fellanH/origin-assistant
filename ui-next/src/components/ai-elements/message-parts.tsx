@@ -17,6 +17,7 @@ import {
   type ToolPart,
 } from "./tool";
 import { SubagentCard } from "./subagent-card";
+import { InlineErrorBoundary, CompactErrorBoundary } from "@/components/error-boundary";
 
 type MessagePartsProps = {
   content: string;
@@ -119,36 +120,40 @@ export function MessageParts({
               const meta = formatToolMeta(part.name, part.args);
 
               return (
-                <Tool key={`call-${part.toolCallId}`}>
-                  <ToolHeader
-                    type="dynamic-tool"
-                    state={state}
-                    toolName={part.name}
-                    title={meta || part.name}
-                  />
-                  <ToolContent>
-                    <ToolInput input={part.args as ToolPart["input"]} />
-                  </ToolContent>
-                </Tool>
+                <InlineErrorBoundary key={`call-${part.toolCallId}`} label={part.name}>
+                  <Tool>
+                    <ToolHeader
+                      type="dynamic-tool"
+                      state={state}
+                      toolName={part.name}
+                      title={meta || part.name}
+                    />
+                    <ToolContent>
+                      <ToolInput input={part.args as ToolPart["input"]} />
+                    </ToolContent>
+                  </Tool>
+                </InlineErrorBoundary>
               );
             }
 
             case "tool-result": {
               return (
-                <Tool key={`result-${part.toolCallId}`}>
-                  <ToolHeader
-                    type="dynamic-tool"
-                    state={part.isError ? "output-error" : "output-available"}
-                    toolName={part.name}
-                    title={part.name}
-                  />
-                  <ToolContent>
-                    <ToolOutput
-                      output={part.result as ToolPart["output"]}
-                      errorText={part.isError ? String(part.result) : undefined}
+                <InlineErrorBoundary key={`result-${part.toolCallId}`} label={part.name}>
+                  <Tool>
+                    <ToolHeader
+                      type="dynamic-tool"
+                      state={part.isError ? "output-error" : "output-available"}
+                      toolName={part.name}
+                      title={part.name}
                     />
-                  </ToolContent>
-                </Tool>
+                    <ToolContent>
+                      <ToolOutput
+                        output={part.result as ToolPart["output"]}
+                        errorText={part.isError ? String(part.result) : undefined}
+                      />
+                    </ToolContent>
+                  </Tool>
+                </InlineErrorBoundary>
               );
             }
 
@@ -161,7 +166,53 @@ export function MessageParts({
         {pendingTools
           .filter(([, exec]) => exec.name !== "sessions_spawn") // Subagents rendered separately
           .map(([toolCallId, exec]) => (
-            <Tool key={`pending-${toolCallId}`}>
+            <InlineErrorBoundary key={`pending-${toolCallId}`} label={exec.name}>
+              <Tool>
+                <ToolHeader
+                  type="dynamic-tool"
+                  state={getToolState(exec.phase, exec.isError)}
+                  toolName={exec.name}
+                  title={exec.meta || exec.name}
+                />
+                <ToolContent>
+                  {exec.args !== undefined && <ToolInput input={exec.args as ToolPart["input"]} />}
+                  {exec.result !== undefined && (
+                    <ToolOutput
+                      output={exec.result as ToolPart["output"]}
+                      errorText={exec.isError ? String(exec.result) : undefined}
+                    />
+                  )}
+                </ToolContent>
+              </Tool>
+            </InlineErrorBoundary>
+          ))}
+
+        {/* Render active subagents */}
+        {subagents &&
+          Array.from(subagents.values())
+            .filter((s) => s.status === "spawning" || s.status === "running")
+            .map((sub) => (
+              <CompactErrorBoundary key={sub.toolCallId} label="Subagent">
+                <SubagentCard
+                  subagent={sub}
+                  onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
+                  onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
+                />
+              </CompactErrorBoundary>
+            ))}
+      </>
+    );
+  }
+
+  // Fallback: render raw content as markdown (also render any pending tools and subagents)
+  return (
+    <>
+      <MessageResponse>{content}</MessageResponse>
+      {pendingTools
+        .filter(([, exec]) => exec.name !== "sessions_spawn")
+        .map(([toolCallId, exec]) => (
+          <InlineErrorBoundary key={`pending-${toolCallId}`} label={exec.name}>
+            <Tool>
               <ToolHeader
                 type="dynamic-tool"
                 state={getToolState(exec.phase, exec.isError)}
@@ -178,59 +229,19 @@ export function MessageParts({
                 )}
               </ToolContent>
             </Tool>
-          ))}
-
-        {/* Render active subagents */}
-        {subagents &&
-          Array.from(subagents.values())
-            .filter((s) => s.status === "spawning" || s.status === "running")
-            .map((sub) => (
-              <SubagentCard
-                key={sub.toolCallId}
-                subagent={sub}
-                onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
-                onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
-              />
-            ))}
-      </>
-    );
-  }
-
-  // Fallback: render raw content as markdown (also render any pending tools and subagents)
-  return (
-    <>
-      <MessageResponse>{content}</MessageResponse>
-      {pendingTools
-        .filter(([, exec]) => exec.name !== "sessions_spawn")
-        .map(([toolCallId, exec]) => (
-          <Tool key={`pending-${toolCallId}`}>
-            <ToolHeader
-              type="dynamic-tool"
-              state={getToolState(exec.phase, exec.isError)}
-              toolName={exec.name}
-              title={exec.meta || exec.name}
-            />
-            <ToolContent>
-              {exec.args !== undefined && <ToolInput input={exec.args as ToolPart["input"]} />}
-              {exec.result !== undefined && (
-                <ToolOutput
-                  output={exec.result as ToolPart["output"]}
-                  errorText={exec.isError ? String(exec.result) : undefined}
-                />
-              )}
-            </ToolContent>
-          </Tool>
+          </InlineErrorBoundary>
         ))}
       {subagents &&
         Array.from(subagents.values())
           .filter((s) => s.status === "spawning" || s.status === "running")
           .map((sub) => (
-            <SubagentCard
-              key={sub.toolCallId}
-              subagent={sub}
-              onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
-              onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
-            />
+            <CompactErrorBoundary key={sub.toolCallId} label="Subagent">
+              <SubagentCard
+                subagent={sub}
+                onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
+                onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
+              />
+            </CompactErrorBoundary>
           ))}
     </>
   );
