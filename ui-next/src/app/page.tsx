@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   Conversation,
   ConversationContent,
@@ -24,6 +25,7 @@ import {
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 import { Loader } from "@/components/ai-elements/loader";
+import { ConversationSkeleton } from "@/components/ai-elements/message-skeleton";
 import {
   CopyIcon,
   RefreshCcwIcon,
@@ -32,12 +34,15 @@ import {
   XIcon,
   MenuIcon,
 } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { useGateway, useOpenClawChat, useSessionStats } from "@/lib/use-gateway";
 import { loadSettings, saveSettings, createLocalSession } from "@/lib/storage";
 import { SessionSidebar, type SessionSidebarHandle } from "@/components/session-sidebar";
+import type { SubagentMeta } from "@/lib/session-utils";
 import { ThemeDropdown } from "@/components/theme-toggle";
 import { SidebarHeader } from "@/components/sidebar-header";
 import { useBreakpoint } from "@/hooks/use-mobile";
+import { ErrorBoundary, CompactErrorBoundary, SectionErrorBoundary } from "@/components/error-boundary";
 
 // Helper to get initial settings synchronously (safe for SSR)
 function getInitialSettings() {
@@ -155,6 +160,7 @@ export default function ChatPage() {
     regenerate,
     stopSubagent,
     canAbort,
+    historyLoading,
   } = useOpenClawChat(client, sessionKey, subscribe, handleMessageSent);
 
   // Session stats (token usage)
@@ -163,6 +169,25 @@ export default function ChatPage() {
     sessionKey,
     subscribe
   );
+
+  // Derive subagentMeta for sidebar tree (keyed by childSessionKey)
+  const subagentMeta = useMemo(() => {
+    const meta = new Map<string, SubagentMeta>();
+    for (const [, subagent] of subagents) {
+      if (subagent.childSessionKey) {
+        meta.set(subagent.childSessionKey, {
+          label: subagent.label,
+          status: subagent.status,
+          duration: subagent.completedAt
+            ? subagent.completedAt - subagent.startedAt
+            : Date.now() - subagent.startedAt,
+          model: subagent.model,
+          parentSessionKey: subagent.parentSessionKey,
+        });
+      }
+    }
+    return meta;
+  }, [subagents]);
 
   // Subagent action handlers
   const handleSubagentViewHistory = useCallback((subagent: { childSessionKey?: string }) => {
@@ -207,33 +232,37 @@ export default function ChatPage() {
   return (
     <div className="h-screen bg-gradient-to-b from-background to-background/95 flex overflow-hidden">
       {/* Session Sidebar - Desktop: static, Tablet/Mobile: overlay */}
-      {isOverlayMode ? (
-        <SessionSidebar
-          ref={sidebarRef}
-          client={client}
-          connected={connected}
-          currentSessionKey={sessionKey}
-          collapsed={!mobileSidebarOpen}
-          onSessionSelect={handleSessionChange}
-          onToggleCollapsed={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-          onNewSession={handleNewSession}
-          header={sidebarHeader}
-          isOverlay={true}
-          onClose={() => setMobileSidebarOpen(false)}
-        />
-      ) : (
-        <SessionSidebar
-          ref={sidebarRef}
-          client={client}
-          connected={connected}
-          currentSessionKey={sessionKey}
-          collapsed={sidebarCollapsed}
-          onSessionSelect={handleSessionChange}
-          onToggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
-          onNewSession={handleNewSession}
-          header={sidebarHeader}
-        />
-      )}
+      <ErrorBoundary label="Sidebar" size="compact">
+        {isOverlayMode ? (
+          <SessionSidebar
+            ref={sidebarRef}
+            client={client}
+            connected={connected}
+            currentSessionKey={sessionKey}
+            collapsed={!mobileSidebarOpen}
+            onSessionSelect={handleSessionChange}
+            onToggleCollapsed={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+            onNewSession={handleNewSession}
+            subagentMeta={subagentMeta}
+            header={sidebarHeader}
+            isOverlay={true}
+            onClose={() => setMobileSidebarOpen(false)}
+          />
+        ) : (
+          <SessionSidebar
+            ref={sidebarRef}
+            client={client}
+            connected={connected}
+            currentSessionKey={sessionKey}
+            collapsed={sidebarCollapsed}
+            onSessionSelect={handleSessionChange}
+            onToggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onNewSession={handleNewSession}
+            subagentMeta={subagentMeta}
+            header={sidebarHeader}
+          />
+        )}
+      </ErrorBoundary>
 
       {/* Settings panel (positioned relative to sidebar) */}
       {showSettings && (
@@ -333,92 +362,118 @@ export default function ChatPage() {
         {/* Chat area */}
         <div className="flex-1 flex flex-col px-4 md:px-6 py-4 overflow-hidden max-w-4xl mx-auto w-full">
           <Conversation className="flex-1">
-            <ConversationContent>
-              {messages.length === 0 && !streamingContent && status !== "submitted" && (
-                <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mb-6">
-                    <SparklesIcon className="w-8 h-8 md:w-10 md:h-10 text-purple-400" />
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                    Hi, I&apos;m Cortana
-                  </h2>
-                  <p className="text-muted-foreground mt-2 max-w-sm text-sm md:text-base">
-                    Your AI assistant. Ask me anything — I can help with code, answer questions, and much more.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-6 justify-center">
-                    {["What can you do?", "Help me code", "Explain something"].map((suggestion) => (
-                      <button
-                        key={suggestion}
-                        onClick={() => setInput(suggestion)}
-                        className="px-4 py-2 rounded-full bg-accent/50 hover:bg-accent text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <SectionErrorBoundary label="Chat">
+              <ConversationContent>
+              {/* Loading skeleton while fetching history */}
+              <AnimatePresence mode="wait">
+                {historyLoading && messages.length === 0 && (
+                  <ConversationSkeleton key="skeleton" messageCount={2} />
+                )}
 
-              {messages.map((message, i) => {
-                const isLatestAssistant = message.role === "assistant" && i === messages.length - 1;
+                {/* Empty state - only show if not loading and no messages */}
+                {!historyLoading && messages.length === 0 && !streamingContent && status !== "submitted" && (
+                  <motion.div
+                    key="empty"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <EmptyState onSuggestionClick={setInput} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-                return (
-                  <Message key={message.id} from={message.role}>
-                    <MessageContent>
-                      {message.role === "assistant" ? (
-                        <MessageParts
-                          content={message.content}
-                          parts={message.parts}
-                          isStreaming={isLatestAssistant && status === "streaming"}
-                          toolExecutions={isLatestAssistant ? toolExecutions : undefined}
-                          subagents={isLatestAssistant ? subagents : undefined}
-                          onSubagentViewHistory={handleSubagentViewHistory}
-                          onSubagentStop={handleSubagentStop}
-                        />
-                      ) : (
-                        <MessageResponse>{message.content}</MessageResponse>
-                      )}
-                    </MessageContent>
-                    {isLatestAssistant && status === "idle" && (
-                      <MessageActions>
-                        <MessageAction onClick={regenerate} label="Regenerate">
-                          <RefreshCcwIcon className="size-3" />
-                        </MessageAction>
-                        <MessageAction
-                          onClick={() => handleCopy(message.content, message.id)}
-                          label={copied === message.id ? "Copied!" : "Copy"}
-                        >
-                          {copied === message.id ? (
-                            <CheckIcon className="size-3 text-emerald-500" />
-                          ) : (
-                            <CopyIcon className="size-3" />
+              {/* Message list with smooth transitions */}
+              <AnimatePresence initial={false}>
+                {messages.map((message, i) => {
+                  const isLatestAssistant = message.role === "assistant" && i === messages.length - 1;
+
+                  return (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <CompactErrorBoundary label="Message">
+                        <Message from={message.role}>
+                          <MessageContent>
+                            {message.role === "assistant" ? (
+                              <MessageParts
+                                content={message.content}
+                                parts={message.parts}
+                                isStreaming={isLatestAssistant && status === "streaming"}
+                                toolExecutions={isLatestAssistant ? toolExecutions : undefined}
+                                subagents={isLatestAssistant ? subagents : undefined}
+                                onSubagentViewHistory={handleSubagentViewHistory}
+                                onSubagentStop={handleSubagentStop}
+                              />
+                            ) : (
+                              <MessageResponse>{message.content}</MessageResponse>
+                            )}
+                          </MessageContent>
+                          {isLatestAssistant && status === "idle" && (
+                            <MessageActions>
+                              <MessageAction onClick={regenerate} label="Regenerate">
+                                <RefreshCcwIcon className="size-3" />
+                              </MessageAction>
+                              <MessageAction
+                                onClick={() => handleCopy(message.content, message.id)}
+                                label={copied === message.id ? "Copied!" : "Copy"}
+                              >
+                                {copied === message.id ? (
+                                  <CheckIcon className="size-3 text-emerald-500" />
+                                ) : (
+                                  <CopyIcon className="size-3" />
+                                )}
+                              </MessageAction>
+                            </MessageActions>
                           )}
-                        </MessageAction>
-                      </MessageActions>
-                    )}
-                  </Message>
-                );
-              })}
+                        </Message>
+                      </CompactErrorBoundary>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
 
               {/* Streaming message */}
-              {(streamingContent || toolExecutions.size > 0 || subagents.size > 0) && status === "streaming" && (
-                <Message from="assistant">
-                  <MessageContent>
-                    <MessageParts
-                      content={streamingContent}
-                      isStreaming={true}
-                      toolExecutions={toolExecutions}
-                      subagents={subagents}
-                      onSubagentViewHistory={handleSubagentViewHistory}
-                      onSubagentStop={handleSubagentStop}
-                    />
-                  </MessageContent>
-                </Message>
-              )}
+              <AnimatePresence>
+                {(streamingContent || toolExecutions.size > 0 || subagents.size > 0) && status === "streaming" && (
+                  <motion.div
+                    key="streaming"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <CompactErrorBoundary label="Streaming message">
+                      <Message from="assistant">
+                        <MessageContent>
+                          <MessageParts
+                            content={streamingContent}
+                            isStreaming={true}
+                            toolExecutions={toolExecutions}
+                            subagents={subagents}
+                            onSubagentViewHistory={handleSubagentViewHistory}
+                            onSubagentStop={handleSubagentStop}
+                          />
+                        </MessageContent>
+                      </Message>
+                    </CompactErrorBoundary>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-              {/* Loading indicator */}
-              {status === "submitted" && <Loader />}
-            </ConversationContent>
+              {/* Thinking indicator - shows while waiting for first response */}
+              <AnimatePresence>
+                {status === "submitted" && (
+                  <Loader key="thinking" variant="thinking" label="Thinking" />
+                )}
+              </AnimatePresence>
+              </ConversationContent>
+            </SectionErrorBoundary>
             <ConversationScrollButton />
           </Conversation>
 

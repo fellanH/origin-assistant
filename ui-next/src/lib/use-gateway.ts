@@ -66,6 +66,7 @@ export type SubagentState = {
   status: "spawning" | "running" | "completed" | "error" | "timeout";
   runId?: string;
   childSessionKey?: string; // e.g., "agent:main:subagent:abc123"
+  parentSessionKey?: string; // The session that spawned this subagent
   startedAt: number;
   completedAt?: number;
   error?: string;
@@ -460,6 +461,8 @@ export function useOpenClawChat(
   const [streamingContent, setStreamingContent] = useState<string>("");
   const [currentRunId, setCurrentRunId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Track history loading state for smoother transitions
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   // Live tool executions (ephemeral, not persisted)
   const [toolExecutions, setToolExecutions] = useState<Map<string, ToolExecutionState>>(
@@ -497,6 +500,7 @@ export function useOpenClawChat(
     setStatus("idle");
     setCurrentRunId(null);
     setError(null);
+    setHistoryLoading(true);
 
     // First, load from local storage (instant)
     const localMessages = getLocalMessages(sessionKey);
@@ -509,6 +513,8 @@ export function useOpenClawChat(
         timestamp: msg.timestamp,
       }));
       setMessages(mapped);
+      // Local messages loaded, can show them while gateway loads
+      setHistoryLoading(false);
     }
 
     // Then try to load from gateway (if available) and merge
@@ -545,7 +551,13 @@ export function useOpenClawChat(
           // Gateway history failed, keep local messages
           // Also try to enable verbose mode anyway
           client.setVerboseLevel(sessionKey, "on").catch(() => {});
+        })
+        .finally(() => {
+          setHistoryLoading(false);
         });
+    } else {
+      // No client, finish loading
+      setHistoryLoading(false);
     }
   }, [client, sessionKey]);
 
@@ -768,6 +780,7 @@ export function useOpenClawChat(
               label: spawnArgs?.label,
               model: spawnArgs?.model,
               status: "spawning",
+              parentSessionKey: sessionKeyRef.current, // Track which session spawned this
               startedAt: Date.now(),
             });
             return next;
@@ -988,5 +1001,6 @@ export function useOpenClawChat(
     isStreaming: status === "streaming",
     isSubmitted: status === "submitted",
     canAbort: status === "streaming" || status === "submitted",
+    historyLoading,
   };
 }

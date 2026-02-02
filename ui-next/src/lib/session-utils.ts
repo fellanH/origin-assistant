@@ -30,6 +30,7 @@ export type SubagentMeta = {
   status?: "spawning" | "running" | "completed" | "error" | "timeout";
   duration?: number;
   model?: string;
+  parentSessionKey?: string; // The session that spawned this subagent
 };
 
 export type SessionTreeNode = {
@@ -179,20 +180,24 @@ export function buildSessionTree(
   const childMap = new Map<string, SessionTreeNode[]>();
   
   for (const { session, parsed: parsedKey } of parsed) {
+    const meta = subagentMeta?.get(session.key);
     const node: SessionTreeNode = {
       session,
       parsed: parsedKey,
       children: [],
       depth: 0,
-      subagentMeta: subagentMeta?.get(session.key),
+      subagentMeta: meta,
     };
     
-    if (parsedKey.parentKey) {
+    // Determine parent: prefer metadata (actual parent) over parsed key (default to main)
+    const actualParentKey = meta?.parentSessionKey ?? parsedKey.parentKey;
+    
+    if (actualParentKey) {
       // This is a child session (subagent)
-      if (!childMap.has(parsedKey.parentKey)) {
-        childMap.set(parsedKey.parentKey, []);
+      if (!childMap.has(actualParentKey)) {
+        childMap.set(actualParentKey, []);
       }
-      childMap.get(parsedKey.parentKey)!.push(node);
+      childMap.get(actualParentKey)!.push(node);
     } else {
       // This is a root session
       roots.push(node);
