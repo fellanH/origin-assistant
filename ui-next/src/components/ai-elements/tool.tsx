@@ -143,14 +143,27 @@ export const ToolOutput = ({
     return null;
   }
 
-  let Output = <div>{output as ReactNode}</div>;
+  // Determine how to render output based on its type
+  // Defensive: handle all types to prevent raw primitives from leaking as plain text
+  let Output: ReactNode = null;
 
-  if (typeof output === "object" && !isValidElement(output)) {
-    Output = (
-      <CodeBlock code={JSON.stringify(output, null, 2)} language="json" />
-    );
-  } else if (typeof output === "string") {
-    Output = <CodeBlock code={output} language="json" />;
+  if (output !== undefined && output !== null) {
+    if (isValidElement(output)) {
+      // React element - render directly
+      Output = output;
+    } else if (typeof output === "string") {
+      // String - render in CodeBlock
+      Output = <CodeBlock code={output} language="json" />;
+    } else if (typeof output === "object") {
+      // Object/Array - JSON stringify and render in CodeBlock
+      Output = (
+        <CodeBlock code={JSON.stringify(output, null, 2)} language="json" />
+      );
+    } else {
+      // Primitives (number, boolean, etc.) - convert to string and render in CodeBlock
+      // This prevents raw numbers like "182" from leaking through as plain text
+      Output = <CodeBlock code={String(output)} language="json" />;
+    }
   }
 
   return (
