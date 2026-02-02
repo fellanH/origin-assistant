@@ -27,6 +27,7 @@ type MessagePartsProps = {
   subagents?: Map<string, SubagentState>;
   onSubagentViewHistory?: (subagent: SubagentState) => void;
   onSubagentStop?: (subagent: SubagentState) => void;
+  onSubagentNavigateToSession?: (sessionKey: string) => void;
 };
 
 /**
@@ -68,6 +69,7 @@ export function MessageParts({
   subagents,
   onSubagentViewHistory,
   onSubagentStop,
+  onSubagentNavigateToSession,
 }: MessagePartsProps) {
   // Compute which tools are already persisted in message.parts
   const persistedToolIds = useMemo(() => {
@@ -194,6 +196,7 @@ export function MessageParts({
                   <SubagentArtifact
                     subagent={persistedSubagent}
                     onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(persistedSubagent) : undefined}
+                    onNavigateToSession={onSubagentNavigateToSession}
                   />
                 </CompactErrorBoundary>
               );
@@ -240,6 +243,7 @@ export function MessageParts({
               subagent={sub}
               onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
               onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
+              onNavigateToSession={onSubagentNavigateToSession}
             />
           </CompactErrorBoundary>
         ))}
@@ -280,6 +284,7 @@ export function MessageParts({
             subagent={sub}
             onViewHistory={onSubagentViewHistory ? () => onSubagentViewHistory(sub) : undefined}
             onStop={onSubagentStop ? () => onSubagentStop(sub) : undefined}
+            onNavigateToSession={onSubagentNavigateToSession}
           />
         </CompactErrorBoundary>
       ))}

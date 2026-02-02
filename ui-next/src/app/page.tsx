@@ -107,6 +107,7 @@ export default function ChatPage() {
 
 	// Mark as mounted after hydration
 	useEffect(() => {
+		// One-time initialization after hydration - safe to set state here
 		setMounted(true); // eslint-disable-line react-hooks/set-state-in-effect
 	}, []);
 
@@ -160,6 +161,7 @@ export default function ChatPage() {
 	// Auto-open settings if connection fails (likely auth issue)
 	useEffect(() => {
 		if (connectionError && !showSettings) {
+			// Intentionally open settings panel to help user fix connection issues
 			setShowSettings(true); // eslint-disable-line react-hooks/set-state-in-effect
 		}
 	}, [connectionError, showSettings]);
@@ -215,6 +217,13 @@ export default function ChatPage() {
 				// Switch to the subagent session to view its history
 				setSessionKey(subagent.childSessionKey);
 			}
+		},
+		[],
+	);
+
+	const handleSubagentNavigateToSession = useCallback(
+		(sessionKey: string) => {
+			setSessionKey(sessionKey);
 		},
 		[],
 	);
@@ -294,66 +303,68 @@ export default function ChatPage() {
 
 			{/* Settings panel (positioned relative to sidebar) */}
 			{showSettings && (
-				<div
-					className={`absolute top-16 z-50 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl p-5 w-80 animate-in fade-in slide-in-from-top-2 duration-200 ${isOverlayMode ? "left-4 right-4 w-auto max-w-80" : "left-4"}`}
-				>
-					<div className="flex items-center justify-between mb-4">
-						<h3 className="font-semibold">Settings</h3>
-						<button
-							onClick={() => setShowSettings(false)}
-							className="p-1 rounded-lg hover:bg-accent/50 text-muted-foreground"
-						>
-							<XIcon className="w-4 h-4" />
-						</button>
-					</div>
-					<div className="space-y-4">
-						<div>
-							<label className="text-sm font-medium text-muted-foreground">
-								Gateway URL
-							</label>
-							<input
-								type="text"
-								value={gatewayUrl}
-								onChange={(e) => setGatewayUrl(e.target.value)}
-								className="w-full mt-1.5 px-3 py-2.5 bg-background/50 border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
-								placeholder="ws://localhost:18789"
-							/>
+				<CompactErrorBoundary label="Settings">
+					<div
+						className={`absolute top-16 z-50 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl p-5 w-80 animate-in fade-in slide-in-from-top-2 duration-200 ${isOverlayMode ? "left-4 right-4 w-auto max-w-80" : "left-4"}`}
+					>
+						<div className="flex items-center justify-between mb-4">
+							<h3 className="font-semibold">Settings</h3>
+							<button
+								onClick={() => setShowSettings(false)}
+								className="p-1 rounded-lg hover:bg-accent/50 text-muted-foreground"
+							>
+								<XIcon className="w-4 h-4" />
+							</button>
 						</div>
-						<div>
-							<div className="flex items-center justify-between">
+						<div className="space-y-4">
+							<div>
 								<label className="text-sm font-medium text-muted-foreground">
-									Token
+									Gateway URL
 								</label>
-								{token && (
-									<span className="text-xs text-emerald-500 flex items-center gap-1">
-										<CheckIcon className="w-3 h-3" />
-										Detected
-									</span>
-								)}
+								<input
+									type="text"
+									value={gatewayUrl}
+									onChange={(e) => setGatewayUrl(e.target.value)}
+									className="w-full mt-1.5 px-3 py-2.5 bg-background/50 border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
+									placeholder="ws://localhost:18789"
+								/>
 							</div>
-							<input
-								type="password"
-								value={token}
-								onChange={(e) => setToken(e.target.value)}
-								className="w-full mt-1.5 px-3 py-2.5 bg-background/50 border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
-								placeholder={token ? "••••••••" : "Optional"}
-							/>
+							<div>
+								<div className="flex items-center justify-between">
+									<label className="text-sm font-medium text-muted-foreground">
+										Token
+									</label>
+									{token && (
+										<span className="text-xs text-emerald-500 flex items-center gap-1">
+											<CheckIcon className="w-3 h-3" />
+											Detected
+										</span>
+									)}
+								</div>
+								<input
+									type="password"
+									value={token}
+									onChange={(e) => setToken(e.target.value)}
+									className="w-full mt-1.5 px-3 py-2.5 bg-background/50 border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
+									placeholder={token ? "••••••••" : "Optional"}
+								/>
+							</div>
+							<div>
+								<label className="text-sm font-medium text-muted-foreground">
+									Session
+								</label>
+								<input
+									type="text"
+									value={sessionKey}
+									onChange={(e) => setSessionKey(e.target.value)}
+									className="w-full mt-1.5 px-3 py-2.5 bg-background/50 border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
+									placeholder="agent:main:main"
+								/>
+							</div>
+							<ThemeDropdown />
 						</div>
-						<div>
-							<label className="text-sm font-medium text-muted-foreground">
-								Session
-							</label>
-							<input
-								type="text"
-								value={sessionKey}
-								onChange={(e) => setSessionKey(e.target.value)}
-								className="w-full mt-1.5 px-3 py-2.5 bg-background/50 border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
-								placeholder="agent:main:main"
-							/>
-						</div>
-						<ThemeDropdown />
 					</div>
-				</div>
+				</CompactErrorBoundary>
 			)}
 
 			{/* Main Content - Full Height Conversation */}
@@ -466,6 +477,9 @@ export default function ChatPage() {
 																		handleSubagentViewHistory
 																	}
 																	onSubagentStop={handleSubagentStop}
+																	onSubagentNavigateToSession={
+																		handleSubagentNavigateToSession
+																	}
 																/>
 															) : (
 																<MessageResponse>
@@ -504,12 +518,13 @@ export default function ChatPage() {
 									})}
 								</AnimatePresence>
 
-								{/* Streaming message */}
+								{/* Streaming message / Active subagents */}
 								<AnimatePresence>
-									{(streamingContent ||
-										toolExecutions.size > 0 ||
-										subagents.size > 0) &&
-										status === "streaming" && (
+									{((streamingContent ||
+										toolExecutions.size > 0) &&
+										status === "streaming") ||
+										(subagents.size > 0 && 
+										 Array.from(subagents.values()).some(s => s.status === "spawning" || s.status === "running")) && (
 											<motion.div
 												key="streaming"
 												initial={{ opacity: 0, y: 10 }}
@@ -529,6 +544,9 @@ export default function ChatPage() {
 																	handleSubagentViewHistory
 																}
 																onSubagentStop={handleSubagentStop}
+																onSubagentNavigateToSession={
+																	handleSubagentNavigateToSession
+																}
 															/>
 														</MessageContent>
 													</Message>

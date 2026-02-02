@@ -2,6 +2,7 @@
 
 import { memo, useEffect, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { formatDuration } from "@/lib/session-utils";
 import { Badge } from "@/components/ui/badge";
 import { Loader } from "@/components/ai-elements/loader";
 import {
@@ -17,6 +18,7 @@ import {
   MessageSquare,
   Copy,
   Check,
+  ExternalLink,
 } from "lucide-react";
 import { ArtifactActions, ArtifactAction } from "@/components/ai-elements/artifact";
 import type { SubagentState } from "@/lib/use-gateway";
@@ -30,6 +32,7 @@ export type SubagentArtifactProps = {
   subagent: SubagentState;
   onViewHistory?: () => void;
   onStop?: () => void;
+  onNavigateToSession?: (sessionKey: string) => void;
   className?: string;
   /** Optional conversation history for inline preview */
   conversationHistory?: HistoryMessage[];
@@ -83,21 +86,11 @@ const statusConfig = {
   },
 };
 
-function formatDuration(ms: number): string {
-  const seconds = Math.floor(ms / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  if (minutes < 60) return `${minutes}m ${remainingSeconds}s`;
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return `${hours}h ${remainingMinutes}m`;
-}
-
 export const SubagentArtifact = memo(function SubagentArtifact({
   subagent,
   onViewHistory,
   onStop,
+  onNavigateToSession,
   className,
   conversationHistory,
 }: SubagentArtifactProps) {
@@ -200,12 +193,15 @@ export const SubagentArtifact = memo(function SubagentArtifact({
               config.badgeVariant === "outline" && config.color
             )}
           >
-            {config.label}
+            {isActive && subagent.currentTool 
+              ? subagent.currentTool.name 
+              : config.label}
           </Badge>
           
-          {/* Duration */}
-          <span className="text-xs text-muted-foreground font-mono w-16 text-right tabular-nums">
+          {/* Duration and tool count */}
+          <span className="text-xs text-muted-foreground font-mono text-right tabular-nums">
             {formatDuration(elapsed)}
+            {subagent.toolCount ? ` • ${subagent.toolCount} tool${subagent.toolCount > 1 ? 's' : ''}` : ''}
           </span>
           
           {/* Expand/collapse chevron */}
@@ -255,6 +251,19 @@ export const SubagentArtifact = memo(function SubagentArtifact({
       {/* Actions row - always visible at bottom */}
       <div className="flex items-center justify-end gap-1 px-3 py-2 border-t bg-muted/30">
         <ArtifactActions>
+          {/* Open Session - navigate to subagent session */}
+          {subagent.childSessionKey && onNavigateToSession && (
+            <ArtifactAction
+              tooltip="Open subagent session"
+              icon={ExternalLink}
+              onClick={(e) => {
+                e.stopPropagation();
+                onNavigateToSession(subagent.childSessionKey!);
+              }}
+              className="h-7 w-7"
+            />
+          )}
+
           {/* View History - always visible when session exists */}
           {subagent.childSessionKey && onViewHistory && (
             <ArtifactAction

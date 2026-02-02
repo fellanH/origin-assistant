@@ -18,44 +18,46 @@
 - `src/agents/` — Orchestration, subagents, tools
 - `src/sessions/` — Session management
 
-## Active Work: SubagentArtifact (Phase 1.1)
+## Active Work: Post-Review Cleanup
 
-**Problem:** Subagents disappear after completion, no visibility into what they did.
+**Code Review (2026-02-02):** 4 senior agents reviewed backend, UI, data flow, and code quality.
 
-**Solution:** New `SubagentArtifact` component using Agent/Artifact primitives.
+### Critical Findings
 
-**Tasks file:** `ui-next/TASKS-SUBAGENT-ARTIFACT.md`
+| Area | Issue | Priority |
+|------|-------|----------|
+| Data Flow | Race condition: history load vs WebSocket events | 🔴 |
+| Data Flow | Stale closure in subagent persistence | 🔴 |
+| Data Flow | Double persistence bug | 🔴 |
+| UI | God component (`page.tsx` with 30+ useState) | 🔴 |
+| Backend | Race condition in bash-process-registry | 🔴 |
+| Backend | Memory leak in subagent-registry | 🔴 |
 
-| Task | Description | Status |
-|------|-------------|--------|
-| 1 | Base component with Agent/Artifact patterns | PENDING |
-| 2 | Task description section | PENDING |
-| 3 | Result summary section | PENDING |
-| 4 | Expandable history preview | PENDING |
-| 5 | Action buttons | PENDING |
-| 6 | message-parts.tsx integration | PENDING |
-| 7 | Persist in message parts | PENDING |
-| 8 | Remove old SubagentCard | PENDING |
+### SubagentArtifact (Phase 1.1) — Nearly Complete
+
+| Task | Status |
+|------|--------|
+| Tasks 1-7 | ✅ Complete |
+| Task 8: Delete old SubagentCard | 🔲 Pending (5 min) |
 
 ## Pickup
 
-- [ ] Run sub-agents on Tasks 1-5 (can parallelize 2-5 after 1)
-- [ ] Then Tasks 6-7 sequentially
-- [ ] Task 8 last (cleanup)
-- [ ] Demo to colleague (TBD)
+- [ ] Complete Task 8 (delete subagent-card.tsx) — 5 min
+- [ ] Quick wins from code review — see `REVIEW-2026-02-02.md`
+- [ ] State management fixes (Batch 1) — critical race conditions
+- [ ] Component architecture refactor (Batch 2) — ChatProvider context
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `ROADMAP.md` | Full project roadmap and vision |
-| `ui-next/TASKS-SUBAGENT-ARTIFACT.md` | Atomic tasks for current work |
+| `REVIEW-2026-02-02.md` | **Code review findings + action list** |
+| `ui-next/TASKS-SUBAGENT-ARTIFACT.md` | Atomic tasks for SubagentArtifact (7/8 done) |
 | `ui-next/IMPROVEMENTS.md` | Full status + backlog |
 | `ui-next/BUGS-AND-POLISH.md` | Active bugs + polish items |
-| `ui-next/src/components/ai-elements/agent.tsx` | Agent component primitives |
-| `ui-next/src/components/ai-elements/artifact.tsx` | Artifact component primitives |
-| `ui-next/src/components/ai-elements/subagent-card.tsx` | Current impl (to replace) |
-| `ui-next/src/lib/use-gateway.ts` | SubagentState, tracking logic |
+| `ui-next/src/components/ai-elements/subagent-artifact.tsx` | New subagent component |
+| `ui-next/src/lib/use-gateway.ts` | SubagentState, tracking logic (needs refactor) |
 
 ## Related: Ralph-Loop
 

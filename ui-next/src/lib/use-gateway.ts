@@ -86,6 +86,15 @@ export type SubagentState = {
   completedAt?: number;
   error?: string;
   resultSummary?: string; // Summary of what the subagent produced when completed
+
+  // Live activity tracking
+  currentTool?: {
+    name: string;
+    phase: "executing" | "result";
+    startedAt: number;
+  };
+  toolCount?: number; // Total tools executed
+  lastActivity?: number; // Timestamp of last event
 };
 
 export type ChatStatus = "idle" | "streaming" | "submitted" | "error";
@@ -160,6 +169,7 @@ export function useGateway(url: string, token?: string, password?: string) {
     };
   }, [url, token, password]);
 
+  // Client ref is stable across renders, used by consumers for imperative calls
   // eslint-disable-next-line react-hooks/refs
   return {
     client: clientRef.current,
@@ -563,7 +573,7 @@ export function useOpenClawChat(
 
   // Load history on mount and when session changes
   useEffect(() => {
-    // Clear current state when session changes
+    // Clear current state when session changes - this is synchronous initialization
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMessages([]);
     setStreamingContent("");
@@ -907,6 +917,69 @@ export function useOpenClawChat(
   }, [subscribe]);
 
   // ============================================================================
+  // STREAM 3: Child Subagent Events (track subagent activity)
+  // ============================================================================
+  useEffect(() => {
+    // Get all running subagents with child session keys
+    const runningChildren = Array.from(subagents.values())
+      .filter(s => s.status === "running" && s.childSessionKey);
+    
+    if (runningChildren.length === 0) return;
+    
+    // Create set of child session keys for fast lookup
+    const childKeys = new Set(runningChildren.map(s => s.childSessionKey!));
+    
+    const unsub = subscribe("agent", (evt) => {
+      const payload = evt.payload as {
+        sessionKey?: string;
+        stream?: string;
+        data?: {
+          phase?: string;
+          name?: string;
+          toolCallId?: string;
+        };
+      };
+      
+      // Only handle events from our child sessions
+      if (!payload?.sessionKey || !childKeys.has(payload.sessionKey)) return;
+      if (payload.stream !== "tool" || !payload.data) return;
+      
+      const { phase, name } = payload.data;
+      
+      setSubagents(prev => {
+        const next = new Map(prev);
+        // Find subagent by childSessionKey
+        for (const [id, sub] of next) {
+          if (sub.childSessionKey === payload.sessionKey) {
+            if (phase === "start") {
+              next.set(id, {
+                ...sub,
+                currentTool: {
+                  name: name ?? "tool",
+                  phase: "executing",
+                  startedAt: Date.now(),
+                },
+                toolCount: (sub.toolCount ?? 0) + 1,
+                lastActivity: Date.now(),
+              });
+            } else if (phase === "result") {
+              next.set(id, {
+                ...sub,
+                currentTool: undefined, // Clear when tool completes
+                lastActivity: Date.now(),
+              });
+            }
+            break;
+          }
+        }
+        return next;
+      });
+    });
+    
+    return unsub;
+  }, [subagents, subscribe]);
+
+  // ============================================================================
   // PERSISTENCE-AWARE CLEANUP
   // Remove tool from toolExecutions ONLY when it appears in message.parts
   // ============================================================================
@@ -1075,6 +1148,7 @@ export function useOpenClawChat(
 
   // Clear toolExecutions, subagents, and message queue when session changes
   useEffect(() => {
+    // Synchronous cleanup of ephemeral state when switching sessions
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setToolExecutions(new Map());
     setSubagents(new Map());

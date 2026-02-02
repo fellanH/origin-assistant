@@ -145,3 +145,13 @@ export const ArtifactContent = ({
 }: ArtifactContentProps) => (
   <div className={cn("flex-1 overflow-auto p-4", className)} {...props} />
 );
+
+// Display names for React DevTools
+Artifact.displayName = "Artifact";
+ArtifactHeader.displayName = "ArtifactHeader";
+ArtifactClose.displayName = "ArtifactClose";
+ArtifactTitle.displayName = "ArtifactTitle";
+ArtifactDescription.displayName = "ArtifactDescription";
+ArtifactActions.displayName = "ArtifactActions";
+ArtifactAction.displayName = "ArtifactAction";
+ArtifactContent.displayName = "ArtifactContent";
