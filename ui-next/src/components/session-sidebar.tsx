@@ -7,11 +7,13 @@ import {
   PlusIcon,
   RefreshCwIcon,
   MessageSquareIcon,
+  XIcon,
 } from "lucide-react";
 import type { GatewayClient } from "@/lib/gateway";
 import { getLocalSessions, deleteLocalSession, type StoredSession } from "@/lib/storage";
 import { buildSessionTree, type Session, type SubagentMeta } from "@/lib/session-utils";
 import { SessionTreeItem } from "./session-tree-item";
+import { cn } from "@/lib/utils";
 
 // ============================================================================
 // LocalStorage key for expanded state
@@ -62,6 +64,10 @@ type SessionSidebarProps = {
   header?: React.ReactNode;
   /** Optional footer slot (rendered below session list) */
   footer?: React.ReactNode;
+  /** Overlay mode for mobile/tablet - sidebar floats over content */
+  isOverlay?: boolean;
+  /** Callback when backdrop is clicked (overlay mode) */
+  onClose?: () => void;
 };
 
 // ============================================================================
@@ -81,6 +87,8 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
       subagentMeta,
       header,
       footer,
+      isOverlay = false,
+      onClose,
     },
     ref
   ) {
@@ -190,11 +198,22 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
       [currentSessionKey, loadSessions, onSessionSelect]
     );
 
+    // Handle session select - close sidebar in overlay mode
+    const handleSessionSelect = useCallback(
+      (sessionKey: string) => {
+        onSessionSelect(sessionKey);
+        if (isOverlay && onClose) {
+          onClose();
+        }
+      },
+      [onSessionSelect, isOverlay, onClose]
+    );
+
     // ========================================================================
-    // Collapsed state
+    // Collapsed state (only for non-overlay desktop mode)
     // ========================================================================
 
-    if (collapsed) {
+    if (collapsed && !isOverlay) {
       return (
         <div className="w-14 min-w-14 h-full bg-card/50 border-r border-border/50 flex flex-col items-center py-4 gap-2">
           <button
@@ -216,11 +235,26 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
     }
 
     // ========================================================================
-    // Expanded state
+    // Hidden in overlay mode when collapsed
     // ========================================================================
 
-    return (
-      <div className="w-72 min-w-72 h-full bg-card/50 border-r border-border/50 flex flex-col">
+    if (collapsed && isOverlay) {
+      return null;
+    }
+
+    // ========================================================================
+    // Sidebar content
+    // ========================================================================
+
+    const sidebarContent = (
+      <div
+        className={cn(
+          "h-full bg-card/95 backdrop-blur-xl flex flex-col",
+          isOverlay
+            ? "w-72 max-w-[85vw] border-r border-border/50 shadow-2xl"
+            : "w-72 min-w-72 bg-card/50 border-r border-border/50"
+        )}
+      >
         {/* Custom header slot (logo, status, settings) */}
         {header}
 
@@ -245,13 +279,23 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
             >
               <PlusIcon className="w-3.5 h-3.5" />
             </button>
-            <button
-              onClick={onToggleCollapsed}
-              className="p-1.5 rounded-lg hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-              title="Collapse sidebar"
-            >
-              <PanelLeftCloseIcon className="w-3.5 h-3.5" />
-            </button>
+            {isOverlay ? (
+              <button
+                onClick={onClose}
+                className="p-1.5 rounded-lg hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                title="Close sidebar"
+              >
+                <XIcon className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <button
+                onClick={onToggleCollapsed}
+                className="p-1.5 rounded-lg hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                title="Collapse sidebar"
+              >
+                <PanelLeftCloseIcon className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -279,7 +323,7 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
                   key={node.session.key}
                   node={node}
                   currentSessionKey={currentSessionKey}
-                  onSessionSelect={onSessionSelect}
+                  onSessionSelect={handleSessionSelect}
                   onDelete={handleDeleteSession}
                   onToggleExpand={handleToggleExpand}
                   expandedKeys={expandedKeys}
@@ -289,9 +333,35 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
           )}
         </div>
 
-        {/* Custom footer slot (chat input) */}
+        {/* Custom footer slot (chat input) - only show if not in overlay mode or explicitly passed */}
         {footer}
       </div>
     );
+
+    // ========================================================================
+    // Overlay mode (mobile/tablet)
+    // ========================================================================
+
+    if (isOverlay) {
+      return (
+        <div className="fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={onClose}
+          />
+          {/* Sidebar with slide animation */}
+          <div className="relative z-10 animate-in slide-in-from-left duration-300 ease-out">
+            {sidebarContent}
+          </div>
+        </div>
+      );
+    }
+
+    // ========================================================================
+    // Desktop mode (static sidebar)
+    // ========================================================================
+
+    return sidebarContent;
   }
 );

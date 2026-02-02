@@ -33,6 +33,27 @@ type SidebarHeaderProps = {
   };
 };
 
+// Convert our usage format to LanguageModelUsage format
+function toLanguageModelUsage(usage?: SidebarHeaderProps['usage']) {
+  if (!usage) return undefined;
+  return {
+    inputTokens: usage.inputTokens ?? 0,
+    outputTokens: usage.outputTokens ?? 0,
+    totalTokens: (usage.inputTokens ?? 0) + (usage.outputTokens ?? 0),
+    reasoningTokens: usage.reasoningTokens,
+    cachedInputTokens: usage.cacheReadTokens,
+    inputTokenDetails: {
+      noCacheTokens: undefined,
+      cacheReadTokens: usage.cacheReadTokens,
+      cacheWriteTokens: usage.cacheWriteTokens,
+    },
+    outputTokenDetails: {
+      reasoningTokens: usage.reasoningTokens,
+      textTokens: undefined,
+    },
+  };
+}
+
 export function SidebarHeader({
   connected,
   connectionError,
@@ -72,11 +93,11 @@ export function SidebarHeader({
         </div>
         <div className="flex items-center gap-0.5">
           {/* Token Usage */}
-          {connected && usedTokens > 0 && (
+          {connected && usedTokens > 0 && maxTokens && (
             <Context
               usedTokens={usedTokens}
               maxTokens={maxTokens}
-              usage={usage}
+              usage={toLanguageModelUsage(usage)}
               modelId={modelId}
             >
               <ContextTrigger className="text-muted-foreground hover:text-foreground p-1.5" />

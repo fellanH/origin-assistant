@@ -20,13 +20,19 @@
 | **Session Tree View** | `session-utils.ts`, `session-tree-item.tsx`, `session-sidebar.tsx` | Hierarchical sidebar with subagents nested under parents |
 | **Context Token Display** | `use-gateway.ts`, `page.tsx` | Token usage + cost in header with hover breakdown |
 | **Input Bug Fixes** | `page.tsx`, `input-group.tsx` | Fixed stop button behavior + text overflow |
+| **Responsive Sidebar** | `page.tsx`, `session-sidebar.tsx`, `use-mobile.ts` | Mobile/tablet overlay mode with hamburger menu |
 
 ### Remaining Work
 
 | Feature | Priority | Description |
 |---------|----------|-------------|
-| **Responsive behavior** | 🟡 MEDIUM | Mobile-friendly sidebar collapse + overlay |
 | **Settings Controls** | 🟢 LOW | Verbose mode toggle, reasoning display toggle |
+
+### Recently Completed
+
+| Feature | Date | Description |
+|---------|------|-------------|
+| **Responsive behavior** | 2026-02-02 | Mobile/tablet sidebar overlay with hamburger menu, input at bottom on mobile |
 
 ### 📋 Completed Phases
 
@@ -47,6 +53,7 @@
 
 | Idea | Description |
 |------|-------------|
+| **Chat Navigator / Minimap** | Quick navigation for long chat sessions — similar to VS Code's minimap or Notion's table of contents. Could show message summaries, tool calls, or key moments as clickable anchors. Helps jump around long conversations. |
 | **Brain X-Ray mode** | Real-time visual trace of data flowing through the app — toggleable "behind the scenes" view showing gateway events, tool calls, token flow, processing states. Could be panel overlay, separate window, or external dev tool. |
 
 ### 🔮 Future Analysis
