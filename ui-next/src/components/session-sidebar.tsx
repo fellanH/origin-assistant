@@ -316,7 +316,7 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
                 {[1, 2, 3].map((i) => (
                   <motion.div
                     key={i}
-                    className="h-10 rounded-lg bg-muted/30"
+                    className="h-10 rounded-lg bg-muted/40 dark:bg-muted/60"
                     animate={{ opacity: [0.5, 0.8, 0.5] }}
                     transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
                   />
@@ -343,7 +343,7 @@ export const SessionSidebar = forwardRef<SessionSidebarHandle, SessionSidebarPro
             ) : (
               <motion.div
                 key="sessions"
-                className="space-y-0.5"
+                className="space-y-1"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

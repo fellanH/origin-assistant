@@ -36,8 +36,8 @@ export function MessageSkeleton({
         <motion.div
           key={i}
           className={cn(
-            "h-4 rounded-md bg-muted/50",
-            isUser ? "bg-primary/10" : "bg-muted/50"
+            "h-4 rounded-md",
+            isUser ? "bg-primary/15 dark:bg-primary/20" : "bg-muted/60 dark:bg-muted/80"
           )}
           style={{
             width: i === lines - 1 ? "60%" : i === 0 ? "85%" : "75%",

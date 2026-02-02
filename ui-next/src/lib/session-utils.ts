@@ -136,7 +136,8 @@ export function parseSessionKey(key: string): ParsedSessionKey {
 export function getSessionIcon(parsed: ParsedSessionKey): string {
   switch (parsed.type) {
     case "main": return "💬";
-    case "subagent": return "🤖";
+    case "chat": return "💬";
+    case "subagent": return "⚡";
     case "channel": {
       switch (parsed.channelType) {
         case "telegram": return "📱";
@@ -146,7 +147,7 @@ export function getSessionIcon(parsed: ParsedSessionKey): string {
         default: return "📢";
       }
     }
-    case "cron": return "⏰";
+    case "cron": return "🔄";
     case "hook": return "🔗";
     default: return "📄";
   }
@@ -156,22 +157,74 @@ function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function getSessionDisplayName(session: Session, parsed: ParsedSessionKey): string {
+/**
+ * Truncate text to a maximum length, adding ellipsis if needed.
+ */
+function truncate(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength - 1).trimEnd() + "…";
+}
+
+/**
+ * Clean up a preview string for display.
+ * Removes excessive whitespace, newlines, and common prefixes.
+ */
+function cleanPreview(text: string): string {
+  return text
+    .replace(/\s+/g, " ")     // Collapse whitespace
+    .replace(/^(hi|hey|hello|yo)\s*[,!]?\s*/i, "") // Remove greetings
+    .trim();
+}
+
+export function getSessionDisplayName(
+  session: Session,
+  parsed: ParsedSessionKey,
+  subagentMeta?: SubagentMeta
+): string {
+  // Use explicit label if set
   if (session.label) return session.label;
   
   switch (parsed.type) {
     case "main":
-      return "Main Session";
-    case "subagent":
-      return `Subagent ${parsed.identifier.slice(0, 6)}`;
-    case "channel":
-      return `${capitalize(parsed.channelType || "channel")}: ${parsed.chatType || ""} ${parsed.identifier.slice(0, 8)}`.trim();
+      return "Main Chat";
+      
+    case "chat": {
+      // For chat sessions, prefer preview (first message) if available
+      if (session.preview) {
+        const cleaned = cleanPreview(session.preview);
+        if (cleaned) return truncate(cleaned, 32);
+      }
+      // Fallback to a friendly name with the session ID
+      return "Chat";
+    }
+    
+    case "subagent": {
+      // Use subagent label/task if available
+      if (subagentMeta?.label) return subagentMeta.label;
+      if (subagentMeta?.task) return truncate(subagentMeta.task, 28);
+      // Fallback
+      return "Background Task";
+    }
+    
+    case "channel": {
+      const platform = capitalize(parsed.channelType || "channel");
+      const type = parsed.chatType ? capitalize(parsed.chatType) : "";
+      // Keep it brief
+      if (type) {
+        return `${platform} ${type}`;
+      }
+      return platform;
+    }
+    
     case "cron":
-      return `Cron: ${parsed.identifier}`;
+      return "Scheduled Task";
+      
     case "hook":
-      return `Hook: ${parsed.identifier.slice(0, 8)}`;
+      return "Webhook";
+      
     default:
-      return session.key.slice(0, 20);
+      // For truly unknown sessions, show a cleaned-up version
+      return truncate(session.key, 24);
   }
 }
 
