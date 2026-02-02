@@ -96,7 +96,7 @@ Replace the current `subagent-card.tsx` with a new `SubagentArtifact` component 
 
 ## Task 4: Add Expandable History Preview
 
-**Status:** PENDING
+**Status:** COMPLETE ✅
 **Depends on:** Task 1, Task 3
 
 **Goal:** Show inline preview of subagent conversation, expandable.
@@ -105,11 +105,13 @@ Replace the current `subagent-card.tsx` with a new `SubagentArtifact` component 
 - `src/components/ai-elements/subagent-artifact.tsx`
 
 **Acceptance criteria:**
-- [ ] "Conversation (N messages)" header with expand/collapse chevron
-- [ ] When expanded, shows condensed message list (role + truncated content)
-- [ ] Max 5 messages shown inline, "View full history" link for more
-- [ ] Messages styled minimally (not full Message components)
-- [ ] Only shows for completed subagents with history available
+- [x] "Conversation (N messages)" header with expand/collapse chevron
+- [x] When expanded, shows condensed message list (role + truncated content)
+- [x] Max 5 messages shown inline, "View full history" link for more
+- [x] Messages styled minimally (not full Message components)
+- [x] Only shows for completed subagents with history available
+
+**Completed:** 2026-02-02 — Added HistoryPreview component with conversationHistory prop, expandable message list with User/Bot icons, 80 char truncation, and "View full history" link
 
 **Notes:**
 - History comes from `onViewHistory` callback or could fetch inline

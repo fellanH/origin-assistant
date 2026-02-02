@@ -222,6 +222,50 @@ Think Chrome DevTools but for agent activity. A toggleable overlay/panel showing
 
 ---
 
+## 🔮 Planning: Agent Project Configs
+
+> **TODO:** Design session with Felix to spec this out.
+
+**Problem:** Every spawn requires context about the project environment:
+- Package manager (npm/pnpm/yarn/bun)
+- Dev vs prod mode
+- Build commands
+- Test commands  
+- Language/framework specifics (Node/Python/Rust/Electron)
+- Working directory conventions
+
+**Vision:** A `.agentrc.json` or `agent.config.md` in each project root:
+
+```json
+{
+  "packageManager": "pnpm",
+  "mode": "production",
+  "build": "pnpm build",
+  "test": "pnpm test",
+  "dev": "pnpm dev",
+  "framework": "next",
+  "conventions": {
+    "components": "src/components",
+    "cacheDir": ".next"
+  }
+}
+```
+
+**Benefits:**
+- Agents auto-read config, no context bloat
+- Consistent behavior across spawns
+- Project-specific workflows without repetition
+- Could inherit from parent configs (monorepo support)
+
+**Questions to resolve:**
+- File format? (JSON vs YAML vs Markdown)
+- Where does it live? (root vs `.openclaw/` vs `agent.config.md`)
+- How do agents discover it?
+- Override hierarchy? (global → project → task)
+- Integration with Origin UI? (project selector reads these)
+
+---
+
 ## Backlog / Ideas
 
 | Idea | Notes |

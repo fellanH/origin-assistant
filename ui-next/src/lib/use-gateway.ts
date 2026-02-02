@@ -74,6 +74,7 @@ export type SubagentState = {
   startedAt: number;
   completedAt?: number;
   error?: string;
+  resultSummary?: string; // Summary of what the subagent produced when completed
 };
 
 export type ChatStatus = "idle" | "streaming" | "submitted" | "error";
