@@ -85,7 +85,7 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
 							<button
 								key={category.label}
 								onClick={() => onSuggestionClick(category.prompts[0])}
-								className="group flex flex-col items-center gap-2 p-4 rounded-2xl bg-card/50 hover:bg-card border border-border/50 hover:border-border transition-all duration-200 hover:shadow-md"
+								className="group flex flex-col items-center gap-2 p-4 rounded-2xl bg-card/50 hover:bg-card border border-border/50 dark:border-border/60 hover:border-border transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 							>
 								<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 group-hover:from-blue-500/20 group-hover:via-purple-500/20 group-hover:to-pink-500/20 flex items-center justify-center transition-colors">
 									<Icon className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
@@ -108,7 +108,7 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
 						<button
 							key={prompt}
 							onClick={() => onSuggestionClick(prompt)}
-							className="px-4 py-2 rounded-full bg-accent/50 hover:bg-accent border border-transparent hover:border-border/50 text-sm text-muted-foreground hover:text-foreground transition-all duration-200"
+							className="px-4 py-2 rounded-full bg-accent/50 hover:bg-accent/80 dark:hover:bg-accent/70 border border-transparent hover:border-border/50 text-sm text-muted-foreground hover:text-foreground transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 						>
 							{prompt}
 						</button>

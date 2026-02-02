@@ -65,10 +65,10 @@ export function SidebarHeader({
 	usage,
 }: SidebarHeaderProps) {
 	return (
-		<div className="px-4 py-4 border-b border-border/50">
+		<div className="px-4 py-4 border-b border-border/50 dark:border-border/60">
 			{/* Top row: Logo + status + actions */}
 			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-2.5">
+				<div className="flex items-center gap-3">
 					<div className="relative">
 						<OriginLogo size={36} state="idle" />
 						<div
@@ -89,7 +89,7 @@ export function SidebarHeader({
 						</p>
 					</div>
 				</div>
-				<div className="flex items-center gap-0.5">
+				<div className="flex items-center gap-1">
 					{/* Token Usage */}
 					{connected && usedTokens > 0 && maxTokens && (
 						<Context
@@ -101,7 +101,7 @@ export function SidebarHeader({
 							<ContextTrigger className="text-muted-foreground hover:text-foreground p-1.5" />
 							<ContextContent side="bottom" align="start">
 								<ContextContentHeader />
-								<ContextContentBody className="space-y-1.5">
+								<ContextContentBody className="space-y-2">
 									<ContextInputUsage />
 									<ContextOutputUsage />
 								</ContextContentBody>
@@ -115,7 +115,7 @@ export function SidebarHeader({
 							"p-1.5 rounded-lg transition-all duration-200",
 							showSettings
 								? "bg-accent text-accent-foreground"
-								: "hover:bg-accent/50 text-muted-foreground hover:text-foreground",
+								: "hover:bg-accent/70 dark:hover:bg-accent/60 text-muted-foreground hover:text-foreground",
 						)}
 					>
 						<SettingsIcon className="w-4 h-4" />

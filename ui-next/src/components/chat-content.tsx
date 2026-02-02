@@ -169,7 +169,7 @@ export function ChatContent({
 					</AnimatePresence>
 					<PromptInput
 						onSubmit={handleSubmit}
-						className={`border border-border/50 rounded-2xl bg-card/50 backdrop-blur-sm shadow-lg transition-shadow ${showSendPulse ? "animate-send-pulse" : ""}`}
+						className={`border border-border/50 dark:border-border/60 rounded-2xl bg-card/50 backdrop-blur-sm shadow-lg transition-shadow ${showSendPulse ? "animate-send-pulse" : ""}`}
 					>
 						<PromptInputBody>
 							<PromptInputTextarea

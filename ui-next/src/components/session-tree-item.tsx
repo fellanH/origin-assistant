@@ -98,18 +98,18 @@ export function SessionTreeItem({
     ? formatTimeAgo(session.createdAt)
     : null;
   
-  // Calculate left padding based on depth (tighter spacing for nested items)
+  // Calculate left padding based on depth using Tailwind scale (px-2.5 = 10px, then +4 per depth = 16px)
   const paddingLeft = depth === 0 ? 10 : 10 + depth * 16;
-  
+
   return (
     <div>
       {/* Main item row */}
       <div
         className={cn(
-          "group w-full flex items-center gap-2.5 py-2.5 rounded-xl text-left transition-all cursor-pointer",
+          "group w-full flex items-center gap-2 py-2 rounded-xl text-left transition-all cursor-pointer",
           isActive
             ? "bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20"
-            : "hover:bg-accent/60 text-foreground",
+            : "hover:bg-accent/70 dark:hover:bg-accent/60 text-foreground",
           // Subtle styling for subagents and cron
           !isActive && (isSubagent || isCron) && "opacity-80 hover:opacity-100"
         )}
@@ -237,7 +237,7 @@ export function SessionTreeItem({
       
       {/* Children (recursive) with subtle left border */}
       {isExpanded && hasChildren && (
-        <div className="relative ml-5 pl-2 border-l border-border/30">
+        <div className="relative ml-5 pl-2 border-l border-border/40 dark:border-border/50">
           {children.map((child) => (
             <SessionTreeItem
               key={child.session.key}

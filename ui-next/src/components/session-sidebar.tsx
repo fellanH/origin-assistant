@@ -6,6 +6,7 @@ import {
 	type Session,
 	type SubagentMeta,
 } from "@/lib/session-utils";
+import { useSessionStore } from "@/lib/session-store";
 import {
 	clearLocalSession,
 	deleteLocalSession,
@@ -258,15 +259,19 @@ export const SessionSidebar = forwardRef<
 		[currentSessionKey, sessions, loadSessions, onSessionSelect, onNewSession],
 	);
 
-	// Clear handler
+	// Clear handler - clears both localStorage and in-memory session state
+	const clearStoreSession = useSessionStore((state) => state.clearSession);
 	const handleClearSession = useCallback(
 		(sessionKey: string) => {
 			if (confirm("Clear all messages from this session?")) {
+				// Clear localStorage messages
 				clearLocalSession(sessionKey);
+				// Clear in-memory session state so UI updates immediately
+				clearStoreSession(sessionKey);
 				loadSessions();
 			}
 		},
-		[loadSessions],
+		[loadSessions, clearStoreSession],
 	);
 
 	// Handle session select - close sidebar in overlay mode
@@ -286,17 +291,17 @@ export const SessionSidebar = forwardRef<
 
 	if (collapsed && !isOverlay) {
 		return (
-			<div className="w-14 min-w-14 h-full bg-card/50 border-r border-border/50 flex flex-col items-center py-4 gap-2">
+			<div className="w-14 min-w-14 h-full bg-card/50 border-r border-border/50 dark:border-border/60 flex flex-col items-center py-4 gap-2">
 				<button
 					onClick={onToggleCollapsed}
-					className="p-2.5 rounded-xl hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+					className="p-2.5 rounded-xl hover:bg-accent/70 dark:hover:bg-accent/60 text-muted-foreground hover:text-foreground transition-colors"
 					title="Expand sidebar"
 				>
 					<PanelLeftOpenIcon className="w-5 h-5" />
 				</button>
 				<button
 					onClick={onNewSession}
-					className="p-2.5 rounded-xl hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+					className="p-2.5 rounded-xl hover:bg-accent/70 dark:hover:bg-accent/60 text-muted-foreground hover:text-foreground transition-colors"
 					title="New session"
 				>
 					<PlusIcon className="w-5 h-5" />
@@ -322,23 +327,23 @@ export const SessionSidebar = forwardRef<
 			className={cn(
 				"h-full bg-card/95 backdrop-blur-xl flex flex-col",
 				isOverlay
-					? "w-72 max-w-[85vw] border-r border-border/50 shadow-2xl"
-					: "w-72 min-w-72 bg-card/50 border-r border-border/50",
+					? "w-72 max-w-[85vw] border-r border-border/50 dark:border-border/60 shadow-2xl"
+					: "w-72 min-w-72 bg-card/50 border-r border-border/50 dark:border-border/60",
 			)}
 		>
 			{/* External agents (only shows when agents are running) */}
-			<ExternalAgentsList className="border-b border-border/50" />
+			<ExternalAgentsList className="border-b border-border/50 dark:border-border/60" />
 
 			{/* Sessions header */}
-			<div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
+			<div className="flex items-center justify-between px-4 py-3 border-b border-border/50 dark:border-border/60">
 				<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
 					Sessions
 				</span>
-				<div className="flex items-center gap-0.5">
+				<div className="flex items-center gap-1">
 					<button
 						onClick={loadSessions}
 						disabled={loading}
-						className="p-1.5 rounded-lg hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+						className="p-1.5 rounded-lg hover:bg-accent/70 dark:hover:bg-accent/60 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
 						title="Refresh"
 					>
 						<RefreshCwIcon
@@ -347,7 +352,7 @@ export const SessionSidebar = forwardRef<
 					</button>
 					<button
 						onClick={onNewSession}
-						className="p-1.5 rounded-lg hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+						className="p-1.5 rounded-lg hover:bg-accent/70 dark:hover:bg-accent/60 text-muted-foreground hover:text-foreground transition-colors"
 						title="New session"
 					>
 						<PlusIcon className="w-3.5 h-3.5" />
@@ -355,7 +360,7 @@ export const SessionSidebar = forwardRef<
 					{isOverlay ? (
 						<button
 							onClick={onClose}
-							className="p-1.5 rounded-lg hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+							className="p-1.5 rounded-lg hover:bg-accent/70 dark:hover:bg-accent/60 text-muted-foreground hover:text-foreground transition-colors"
 							title="Close sidebar"
 						>
 							<XIcon className="w-3.5 h-3.5" />
@@ -363,7 +368,7 @@ export const SessionSidebar = forwardRef<
 					) : (
 						<button
 							onClick={onToggleCollapsed}
-							className="p-1.5 rounded-lg hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+							className="p-1.5 rounded-lg hover:bg-accent/70 dark:hover:bg-accent/60 text-muted-foreground hover:text-foreground transition-colors"
 							title="Collapse sidebar"
 						>
 							<PanelLeftCloseIcon className="w-3.5 h-3.5" />

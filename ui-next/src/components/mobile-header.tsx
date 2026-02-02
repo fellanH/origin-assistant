@@ -8,10 +8,10 @@ interface MobileHeaderProps {
 
 export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
 	return (
-		<div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-card/50 backdrop-blur-xl flex-shrink-0">
+		<div className="flex items-center justify-between px-4 py-3 border-b border-border/50 dark:border-border/60 bg-card/50 backdrop-blur-xl flex-shrink-0">
 			<button
 				onClick={onMenuClick}
-				className="p-2 -ml-2 rounded-xl hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+				className="p-2 -ml-2 rounded-xl hover:bg-accent/70 dark:hover:bg-accent/60 text-muted-foreground hover:text-foreground transition-colors"
 				title="Open menu"
 			>
 				<MenuIcon className="w-5 h-5" />

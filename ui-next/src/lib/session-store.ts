@@ -223,6 +223,9 @@ interface SessionStore {
   evictLRU: () => void;
   touchSession: (key: string) => void;
   clearAllSessions: () => void;
+
+  // Clear session (delete messages but keep session entry)
+  clearSession: (key: string) => void;
   
   // Scroll state
   setScrollState: (key: string, isAtBottom: boolean, scrollOffset?: number | null) => void;
@@ -1009,6 +1012,42 @@ export const useSessionStore = create<SessionStore>()(
 
     clearAllSessions: () => {
       set({ sessions: new Map() });
+    },
+
+    clearSession: (key: string) => {
+      // Clear the in-memory session data (messages, streaming state, etc.)
+      // but keep the session entry in the cache so it can be reused
+      set((state) => {
+        const session = state.sessions.get(key);
+        if (!session) return state;
+
+        const clearedSession: SessionData = {
+          ...session,
+          messages: [],
+          status: "idle",
+          streamingContent: "",
+          streamingMessageId: null,
+          currentRunId: null,
+          error: null,
+          historyLoaded: false, // Reset so history can be reloaded (now empty)
+          historyLoading: false,
+          toolExecutions: new Map(),
+          subagents: new Map(),
+          messageQueue: [],
+          eventQueue: [],
+          persistedSubagentIds: new Set(),
+          lastAccess: Date.now(),
+          isAtBottom: true,
+          scrollOffset: null,
+        };
+
+        const newSessions = new Map(state.sessions);
+        newSessions.set(key, clearedSession);
+        return { sessions: newSessions };
+      });
+
+      // Also clear from the empty session cache to ensure fresh state
+      emptySessionCache.delete(key);
     },
 
     setScrollState: (key: string, isAtBottom: boolean, scrollOffset?: number | null) => {
