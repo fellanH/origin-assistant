@@ -124,7 +124,7 @@ Replace the current `subagent-card.tsx` with a new `SubagentArtifact` component 
 
 ## Task 5: Add Action Buttons
 
-**Status:** PENDING
+**Status:** COMPLETE ✅
 **Depends on:** Task 1
 
 **Goal:** Add action buttons using Artifact action pattern.
@@ -133,12 +133,14 @@ Replace the current `subagent-card.tsx` with a new `SubagentArtifact` component 
 - `src/components/ai-elements/subagent-artifact.tsx`
 
 **Acceptance criteria:**
-- [ ] Actions row at bottom of artifact
-- [ ] "View History" button — always visible, opens full session
-- [ ] "Stop" button — only while running, calls onStop
-- [ ] "Copy Result" button — only when completed with result
-- [ ] Buttons use ArtifactAction style with tooltips
-- [ ] Icons: Eye (history), Square (stop), Copy (copy result)
+- [x] Actions row at bottom of artifact
+- [x] "View History" button — always visible, opens full session
+- [x] "Stop" button — only while running, calls onStop
+- [x] "Copy Result" button — only when completed with result
+- [x] Buttons use ArtifactAction style with tooltips
+- [x] Icons: Eye (history), Square (stop), Copy (copy result)
+
+**Completed:** 2026-02-02 — Added actions row at bottom of artifact using ArtifactActions/ArtifactAction with tooltips. Includes clipboard feedback (copied state) for Copy Result button.
 
 ---
 
