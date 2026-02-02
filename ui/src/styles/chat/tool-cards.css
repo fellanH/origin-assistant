@@ -200,3 +200,154 @@
     transform: scale(1);
   }
 }
+
+/* Tool State Modifiers (AI SDK 6 inspired) */
+.chat-tool-card--calling,
+.chat-tool-card--executing {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--card));
+}
+
+.chat-tool-card--approval {
+  border-color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 8%, var(--card));
+}
+
+.chat-tool-card--error {
+  border-color: var(--destructive);
+  background: color-mix(in srgb, var(--destructive) 5%, var(--card));
+}
+
+.chat-tool-card--complete {
+  /* Default styling */
+}
+
+/* State indicator in header */
+.chat-tool-card__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.chat-tool-card__state svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+.chat-tool-card__state--approval {
+  color: var(--warning);
+}
+
+/* Spinning icon for active states */
+.chat-tool-card__icon--spin svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error message */
+.chat-tool-card__error {
+  font-size: 12px;
+  color: var(--destructive);
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: color-mix(in srgb, var(--destructive) 10%, transparent);
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--destructive) 30%, transparent);
+}
+
+.chat-tool-card__status-text.error {
+  color: var(--destructive);
+}
+
+/* Tool Approval UI */
+.chat-tool-approval {
+  margin-top: 10px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--warning) 5%, var(--secondary));
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, var(--border));
+}
+
+.chat-tool-approval__warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--warning);
+  margin-bottom: 8px;
+}
+
+.chat-tool-approval__warning svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5px;
+  flex-shrink: 0;
+}
+
+.chat-tool-approval__command {
+  display: block;
+  font-size: 11px;
+  padding: 6px 8px;
+  background: var(--secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  word-break: break-all;
+}
+
+.chat-tool-approval__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-tool-approval__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+
+.chat-tool-approval__btn svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2px;
+}
+
+.chat-tool-approval__btn--approve {
+  background: var(--ok);
+  color: white;
+}
+
+.chat-tool-approval__btn--approve:hover {
+  background: color-mix(in srgb, var(--ok) 85%, black);
+}
+
+.chat-tool-approval__btn--deny {
+  background: var(--destructive);
+  color: white;
+}
+
+.chat-tool-approval__btn--deny:hover {
+  background: color-mix(in srgb, var(--destructive) 85%, black);
+}

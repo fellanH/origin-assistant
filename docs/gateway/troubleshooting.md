@@ -740,6 +740,98 @@ openclaw gateway restart           # or: openclaw gateway
 _"Have you tried turning it off and on again?"_ — Every IT person ever
 
 
+### Network Failure with Parallel Tasks (NAT Table Overflow)
+
+**Symptom:** You see "Network Failure" errors when running many parallel agent tasks, even though your internet connection works fine otherwise.
+
+**Why:** When an agent runs many tasks in parallel, it can open hundreds of TCP sockets directly to the Anthropic API. Your router's NAT table can overflow, causing network failures.
+
+**Fix:** Use a local connection-pooling proxy that reuses a small pool of upstream connections instead of opening hundreds.
+
+**Setup (one-time):**
+
+```bash
+# Create the proxy directory
+mkdir -p ~/Tools/claude_proxy && cd ~/Tools/claude_proxy
+
+# Create a Python venv and install dependencies
+python3 -m venv venv
+source venv/bin/activate
+pip install flask requests
+```
+
+**Create `claude_proxy.py`:**
+
+```python
+import logging
+from flask import Flask, request, Response, stream_with_context
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+LISTEN_PORT = 8080
+TARGET_URL = "https://api.anthropic.com"
+POOL_CONNECTIONS = 20
+POOL_MAXSIZE = 20
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%H:%M:%S')
+logger = logging.getLogger("ClaudeProxy")
+
+app = Flask(__name__)
+session = requests.Session()
+adapter = HTTPAdapter(pool_connections=POOL_CONNECTIONS, pool_maxsize=POOL_MAXSIZE,
+                      max_retries=Retry(total=3, backoff_factor=0.5))
+session.mount("https://", adapter)
+session.mount("http://", adapter)
+
+HOP_BY_HOP = {'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
+              'te', 'trailers', 'transfer-encoding', 'upgrade', 'content-encoding', 'content-length'}
+
+@app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def proxy(path):
+    url = f"{TARGET_URL}/{path}"
+    headers = {k: v for k, v in request.headers if k.lower() not in HOP_BY_HOP and k.lower() != 'host'}
+    headers['Host'] = "api.anthropic.com"
+    try:
+        resp = session.request(method=request.method, url=url, headers=headers,
+                               data=request.get_data(), cookies=request.cookies, stream=True, timeout=120)
+        response_headers = [(k, v) for k, v in resp.raw.headers.items() if k.lower() not in HOP_BY_HOP]
+        def generate():
+            for chunk in resp.iter_content(chunk_size=4096):
+                yield chunk
+        return Response(stream_with_context(generate()), status=resp.status_code, headers=response_headers)
+    except Exception as e:
+        logger.error(f"Proxy Error: {e}")
+        return Response(f"Proxy Error: {e}", status=502)
+
+if __name__ == '__main__':
+    logger.info(f"Claude Proxy running on http://localhost:{LISTEN_PORT}")
+    app.run(host='127.0.0.1', port=LISTEN_PORT, threaded=True)
+```
+
+**Usage:**
+
+```bash
+# Terminal 1: Start the proxy
+cd ~/Tools/claude_proxy
+source venv/bin/activate
+python3 claude_proxy.py
+
+# Terminal 2: Point OpenClaw at the proxy
+export ANTHROPIC_BASE_URL="http://localhost:8080"
+openclaw gateway restart
+```
+
+The proxy reuses ~20 connections to Anthropic instead of opening hundreds, keeping your router's NAT table stable. HTTP is fine for localhost; the proxy handles HTTPS upstream.
+
+**To disable:** Unset the env var and restart the gateway:
+
+```bash
+unset ANTHROPIC_BASE_URL
+openclaw gateway restart
+```
+
 ### Browser Not Starting (Linux)
 
 If you see `"Failed to start Chrome CDP on port 18800"`:

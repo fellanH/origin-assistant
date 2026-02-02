@@ -1,0 +1,352 @@
+/* AI Elements inspired components - Message Actions, Scroll Button, Empty State */
+
+/* ============================================
+   Message Actions (copy, retry, like/dislike)
+   ============================================ */
+.message-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.chat-bubble:hover .message-actions,
+.chat-group:hover .message-actions,
+.message-actions:focus-within {
+  opacity: 1;
+}
+
+.message-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+
+.message-action:hover {
+  background: var(--secondary);
+  color: var(--text);
+}
+
+.message-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.message-action--active {
+  color: var(--accent);
+}
+
+.message-action--active:hover {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.message-action svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============================================
+   Scroll-to-Bottom Button
+   ============================================ */
+.scroll-button {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--text-muted);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 150ms ease-out;
+  z-index: 10;
+}
+
+.scroll-button:hover {
+  background: var(--secondary);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.scroll-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.scroll-button svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.scroll-button__badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  color: white;
+  background: var(--accent);
+  border-radius: 9px;
+}
+
+/* ============================================
+   Conversation Empty State
+   ============================================ */
+.conversation-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  min-height: 300px;
+}
+
+.conversation-empty-state__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.conversation-empty-state__icon svg {
+  width: 48px;
+  height: 48px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.conversation-empty-state__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.conversation-empty-state__description {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 24px;
+  max-width: 300px;
+}
+
+.conversation-empty-state__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 400px;
+}
+
+.conversation-empty-state__suggestion {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+
+.conversation-empty-state__suggestion:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+.conversation-empty-state__suggestion:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   Suggestion Chips (prompt suggestions)
+   ============================================ */
+.suggestion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0;
+}
+
+.suggestion-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+
+.suggestion-chip:hover {
+  color: var(--text);
+  background: var(--secondary);
+  border-color: var(--border-strong);
+}
+
+.suggestion-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   Chain of Thought (reasoning steps)
+   ============================================ */
+.chain-of-thought {
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.chain-of-thought__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.chain-of-thought__header:hover {
+  background: var(--bg-hover);
+}
+
+.chain-of-thought__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.chain-of-thought__title svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+.chain-of-thought__chevron {
+  transition: transform 200ms ease-out;
+}
+
+.chain-of-thought--open .chain-of-thought__chevron {
+  transform: rotate(180deg);
+}
+
+.chain-of-thought__content {
+  display: none;
+  padding: 12px;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+}
+
+.chain-of-thought--open .chain-of-thought__content {
+  display: block;
+}
+
+.chain-of-thought__step {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.chain-of-thought__step:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+.chain-of-thought__step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.chain-of-thought__step--complete .chain-of-thought__step-indicator {
+  background: var(--ok);
+  color: white;
+}
+
+.chain-of-thought__step--active .chain-of-thought__step-indicator {
+  background: var(--accent);
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+.chain-of-thought__step--pending .chain-of-thought__step-indicator {
+  background: var(--secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.chain-of-thought__step-content {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.chain-of-thought__step-label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.chain-of-thought__step-text {
+  color: var(--text-muted);
+}

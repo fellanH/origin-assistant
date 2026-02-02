@@ -633,7 +633,7 @@ extension GatewayEndpointStore {
         default:
             components.scheme = "http"
         }
-        components.path = "/"
+        components.path = "/overview"
         var queryItems: [URLQueryItem] = []
         if let token = config.token?.trimmingCharacters(in: .whitespacesAndNewlines),
            !token.isEmpty

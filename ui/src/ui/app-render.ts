@@ -512,6 +512,16 @@ export function renderApp(state: AppViewState) {
                 onSplitRatioChange: (ratio: number) => state.handleSplitRatioChange(ratio),
                 assistantName: state.assistantName,
                 assistantAvatar: state.assistantAvatar,
+                // Session sidebar props
+                sessionSidebarCollapsed: state.settings.sessionSidebarCollapsed,
+                sessionsLoading: state.sessionsLoading,
+                onSessionSidebarToggle: () => {
+                  state.applySettings({
+                    ...state.settings,
+                    sessionSidebarCollapsed: !state.settings.sessionSidebarCollapsed,
+                  });
+                },
+                onSessionsRefresh: () => loadSessions(state),
               })
             : nothing
         }

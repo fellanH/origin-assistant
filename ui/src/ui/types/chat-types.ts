@@ -34,10 +34,21 @@ export type NormalizedMessage = {
   id?: string;
 };
 
+/** Tool invocation state (AI SDK 6 inspired) */
+export type ToolInvocationState =
+  | "calling"           // Tool call initiated, waiting for execution
+  | "executing"         // Tool is actively running
+  | "awaiting-approval" // Tool requires human approval before execution
+  | "complete"          // Tool finished successfully
+  | "error";            // Tool execution failed
+
 /** Tool card representation for tool calls and results */
 export type ToolCard = {
   kind: "call" | "result";
   name: string;
   args?: unknown;
   text?: string;
+  state?: ToolInvocationState;
+  error?: string;
+  approvalId?: string;  // ID for approval response
 };

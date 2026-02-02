@@ -12,6 +12,7 @@ import {
   renderStreamingGroup,
 } from "../chat/grouped-render";
 import { renderMarkdownSidebar } from "./markdown-sidebar";
+import { renderSessionSidebar } from "../chat/session-sidebar";
 import "../components/resizable-divider";
 
 export type CompactionIndicatorStatus = {
@@ -43,11 +44,16 @@ export type ChatProps = {
   sessions: SessionsListResult | null;
   // Focus mode
   focusMode: boolean;
-  // Sidebar state
+  // Sidebar state (markdown viewer)
   sidebarOpen?: boolean;
   sidebarContent?: string | null;
   sidebarError?: string | null;
   splitRatio?: number;
+  // Session sidebar state
+  sessionSidebarCollapsed?: boolean;
+  sessionsLoading?: boolean;
+  onSessionSidebarToggle?: () => void;
+  onSessionsRefresh?: () => void;
   assistantName: string;
   assistantAvatar: string | null;
   // Image attachments
@@ -239,62 +245,76 @@ export function renderChat(props: ChatProps) {
     </div>
   `;
 
+  const sessionSidebarCollapsed = props.sessionSidebarCollapsed ?? false;
+
   return html`
-    <section class="card chat">
-      ${props.disabledReason ? html`<div class="callout">${props.disabledReason}</div>` : nothing}
+    <div class="chat-layout ${sessionSidebarCollapsed ? "chat-layout--sidebar-collapsed" : ""}">
+      ${renderSessionSidebar({
+        sessions: props.sessions,
+        currentSessionKey: props.sessionKey,
+        collapsed: sessionSidebarCollapsed,
+        loading: props.sessionsLoading,
+        onSessionSelect: props.onSessionKeyChange,
+        onToggleCollapsed: () => props.onSessionSidebarToggle?.(),
+        onNewSession: props.onNewSession,
+        onRefresh: () => props.onSessionsRefresh?.(),
+      })}
 
-      ${props.error ? html`<div class="callout danger">${props.error}</div>` : nothing}
+      <section class="card chat">
+        ${props.disabledReason ? html`<div class="callout">${props.disabledReason}</div>` : nothing}
 
-      ${renderCompactionIndicator(props.compactionStatus)}
+        ${props.error ? html`<div class="callout danger">${props.error}</div>` : nothing}
 
-      ${
-        props.focusMode
-          ? html`
-            <button
-              class="chat-focus-exit"
-              type="button"
-              @click=${props.onToggleFocusMode}
-              aria-label="Exit focus mode"
-              title="Exit focus mode"
-            >
-              ${icons.x}
-            </button>
-          `
-          : nothing
-      }
-
-      <div
-        class="chat-split-container ${sidebarOpen ? "chat-split-container--open" : ""}"
-      >
-        <div
-          class="chat-main"
-          style="flex: ${sidebarOpen ? `0 0 ${splitRatio * 100}%` : "1 1 100%"}"
-        >
-          ${thread}
-        </div>
+        ${renderCompactionIndicator(props.compactionStatus)}
 
         ${
-          sidebarOpen
+          props.focusMode
             ? html`
-              <resizable-divider
-                .splitRatio=${splitRatio}
-                @resize=${(e: CustomEvent) => props.onSplitRatioChange?.(e.detail.splitRatio)}
-              ></resizable-divider>
-              <div class="chat-sidebar">
-                ${renderMarkdownSidebar({
-                  content: props.sidebarContent ?? null,
-                  error: props.sidebarError ?? null,
-                  onClose: props.onCloseSidebar!,
-                  onViewRawText: () => {
-                    if (!props.sidebarContent || !props.onOpenSidebar) return;
-                    props.onOpenSidebar(`\`\`\`\n${props.sidebarContent}\n\`\`\``);
-                  },
-                })}
-              </div>
+              <button
+                class="chat-focus-exit"
+                type="button"
+                @click=${props.onToggleFocusMode}
+                aria-label="Exit focus mode"
+                title="Exit focus mode"
+              >
+                ${icons.x}
+              </button>
             `
             : nothing
         }
-      </div>
+
+        <div
+          class="chat-split-container ${sidebarOpen ? "chat-split-container--open" : ""}"
+        >
+          <div
+            class="chat-main"
+            style="flex: ${sidebarOpen ? `0 0 ${splitRatio * 100}%` : "1 1 100%"}"
+          >
+            ${thread}
+          </div>
+
+          ${
+            sidebarOpen
+              ? html`
+                <resizable-divider
+                  .splitRatio=${splitRatio}
+                  @resize=${(e: CustomEvent) => props.onSplitRatioChange?.(e.detail.splitRatio)}
+                ></resizable-divider>
+                <div class="chat-sidebar">
+                  ${renderMarkdownSidebar({
+                    content: props.sidebarContent ?? null,
+                    error: props.sidebarError ?? null,
+                    onClose: props.onCloseSidebar!,
+                    onViewRawText: () => {
+                      if (!props.sidebarContent || !props.onOpenSidebar) return;
+                      props.onOpenSidebar(`\`\`\`\n${props.sidebarContent}\n\`\`\``);
+                    },
+                  })}
+                </div>
+              `
+              : nothing
+          }
+        </div>
 
       ${
         props.queue.length
@@ -331,9 +351,42 @@ export function renderChat(props: ChatProps) {
       <div class="chat-compose">
         ${renderAttachmentPreview(props)}
         <div class="chat-compose__row">
-          <label class="field chat-compose__field">
-            <span>Message</span>
+          <div class="chat-compose__input-wrapper">
+            <button
+              class="chat-compose__attach-btn"
+              type="button"
+              title="Attach image"
+              ?disabled=${!props.connected}
+              @click=${() => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = "image/*";
+                input.multiple = true;
+                input.onchange = () => {
+                  if (!input.files || !props.onAttachmentsChange) return;
+                  const files = Array.from(input.files);
+                  for (const file of files) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      const dataUrl = reader.result as string;
+                      const newAttachment: ChatAttachment = {
+                        id: generateAttachmentId(),
+                        dataUrl,
+                        mimeType: file.type,
+                      };
+                      const current = props.attachments ?? [];
+                      props.onAttachmentsChange?.([...current, newAttachment]);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                };
+                input.click();
+              }}
+            >
+              ${icons.paperclip}
+            </button>
             <textarea
+              class="chat-compose__textarea"
               ${ref((el) => el && adjustTextareaHeight(el as HTMLTextAreaElement))}
               .value=${props.draft}
               ?disabled=${!props.connected}
@@ -353,26 +406,33 @@ export function renderChat(props: ChatProps) {
               @paste=${(e: ClipboardEvent) => handlePaste(e, props)}
               placeholder=${composePlaceholder}
             ></textarea>
-          </label>
+          </div>
           <div class="chat-compose__actions">
+            ${canAbort
+              ? html`
+                <button
+                  class="btn btn--icon chat-compose__stop-btn"
+                  title="Stop generation"
+                  @click=${props.onAbort}
+                >
+                  ${icons.x}
+                </button>
+              `
+              : nothing
+            }
             <button
-              class="btn"
-              ?disabled=${!props.connected || (!canAbort && props.sending)}
-              @click=${canAbort ? props.onAbort : props.onNewSession}
-            >
-              ${canAbort ? "Stop" : "New session"}
-            </button>
-            <button
-              class="btn primary"
+              class="btn primary chat-compose__send-btn"
               ?disabled=${!props.connected}
               @click=${props.onSend}
+              title="${isBusy ? "Queue message" : "Send message"}"
             >
-              ${isBusy ? "Queue" : "Send"}<kbd class="btn-kbd">↵</kbd>
+              ${isBusy ? icons.loader : icons.send}
             </button>
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </div>
   `;
 }
 

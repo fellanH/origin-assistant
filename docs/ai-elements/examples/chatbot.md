@@ -1,0 +1,412 @@
+---
+source: https://ai-sdk.dev/elements/examples/chatbot
+scraped: 2026-02-02T09:36:28.864Z
+category: examples
+---
+
+# Chatbot
+
+An example of how to use the AI Elements to build a chatbot.
+
+An example of how to use the AI Elements to build a chatbot.
+
+# React Hooks Best Practices
+
+React hooks are a powerful feature that let you use state and other React features without writing classes. Here are some tips for using them effectively:
+
+## Rules of Hooks
+
+- Only call hooks at the top level of your component or custom hooks
+
+- Don't call hooks inside loops, conditions, or nested functions
+
+## Common Hooks
+
+- useState: For local component state
+
+- useEffect: For side effects like data fetching
+
+- useContext: For consuming context
+
+- useReducer: For complex state logic
+
+- useCallback: For memoizing functions
+
+- useMemo: For memoizing values
+
+## Example of useState and useEffect
+
+Would you like me to explain any specific hook in more detail?
+
+Yes, could you explain useCallback and useMemo in more detail? When should I use one over the other?
+
+I'm particularly interested in understanding the performance implications of useCallback and useMemo. Could you break down when each is most appropriate?
+
+Thanks for the overview! Could you dive deeper into the specific use cases where useCallback and useMemo make the biggest difference in React applications?
+
+The user is asking for a detailed explanation of useCallback and useMemo. I should provide a clear and concise explanation of each hook's purpose and how they differ.
+
+The useCallback hook is used to memoize functions to prevent unnecessary re-renders of child components that receive functions as props.
+
+The useMemo hook is used to memoize values to avoid expensive recalculations on every render.
+
+Both hooks help with performance optimization, but they serve different purposes.
+
+## useCallback vs useMemo
+
+Both hooks help with performance optimization, but they serve different purposes:
+
+### useCallback
+
+`useCallback` memoizes functions to prevent unnecessary re-renders of child components that receive functions as props.
+
+### useMemo
+
+`useMemo` memoizes values to avoid expensive recalculations on every render.
+
+### When to use which?
+
+- Use useCallback when:
+
+Passing callbacks to optimized child components that rely on reference equality
+
+- Working with event handlers that you pass to child components
+
+- Use useMemo when:
+
+You have computationally expensive calculations
+
+- You want to avoid recreating objects that are used as dependencies for other hooks
+
+### Performance Note
+
+Don't overuse these hooks! They come with their own overhead. Only use them when you have identified a genuine performance issue.
+
+## Tutorial
+
+Let's walk through how to build a chatbot using AI Elements and AI SDK. Our example will include reasoning, web search with citations, and a model picker.
+
+### Setup
+
+First, set up a new Next.js repo and cd into it by running the following command (make sure you choose to use Tailwind the project setup):
+
+```
+npx create-next-app@latest ai-chatbot && cd ai-chatbot
+```
+
+Run the following command to install AI Elements. This will also set up shadcn/ui if you haven't already configured it:
+
+```
+npx ai-elements@latest
+```
+
+Now, install the AI SDK dependencies:
+```
+npm i ai @ai-sdk/react zod
+```
+
+In order to use the providers, let's configure an AI Gateway API key. Create a `.env.local` in your root directory and navigate [here](https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys&title=Get%20your%20AI%20Gateway%20key) to create a token, then paste it in your `.env.local`.
+
+We're now ready to start building our app!
+
+### Client
+
+In your `app/page.tsx`, replace the code with the file below.
+
+Here, we use the `PromptInput` component with its compound components to build a rich input experience with file attachments, model picker, and action menu. The input component uses the new `PromptInputMessage` type for handling both text and file attachments.
+
+The whole chat lives in a `Conversation`. We switch on `message.parts` and render the respective part within `Message`, `Reasoning`, and `Sources`. We also use `status` from `useChat` to stream reasoning tokens, as well as render `Loader`.
+
+app/page.tsx
+```
+'use client';
+
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from '@/components/ai-elements/conversation';
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+  MessageActions,
+  MessageAction,
+} from '@/components/ai-elements/message';
+import {
+  Attachment,
+  AttachmentPreview,
+  AttachmentRemove,
+  Attachments,
+} from '@/components/ai-elements/attachment';
+import {
+  PromptInput,
+  PromptInputActionAddAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
+  PromptInputBody,
+  PromptInputButton,
+  PromptInputHeader,
+  type PromptInputMessage,
+  PromptInputSelect,
+  PromptInputSelectContent,
+  PromptInputSelectItem,
+  PromptInputSelectTrigger,
+  PromptInputSelectValue,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputFooter,
+  PromptInputTools,
+  usePromptInputAttachments,
+} from '@/components/ai-elements/prompt-input';
+import { Fragment, useState } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { CopyIcon, GlobeIcon, RefreshCcwIcon } from 'lucide-react';
+import {
+  Source,
+  Sources,
+  SourcesContent,
+  SourcesTrigger,
+} from '@/components/ai-elements/sources';
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from '@/components/ai-elements/reasoning';
+import { Loader } from '@/components/ai-elements/loader';
+
+const PromptInputAttachmentsDisplay = () => {
+  const attachments = usePromptInputAttachments();
+
+  if (attachments.files.length === 0) {
+    return null;
+  }
+
+  return (
+    Attachments variant="inline">
+      {attachments.files.map((attachment) => (
+        Attachment
+          data={attachment}
+          key={attachment.id}
+          onRemove={() => attachments.remove(attachment.id)}
+        >
+          AttachmentPreview />
+          AttachmentRemove />
+        Attachment>
+      ))}
+    Attachments>
+  );
+};
+
+const models = [
+  {
+    name: 'GPT 4o',
+    value: 'openai/gpt-4o',
+  },
+  {
+    name: 'Deepseek R1',
+    value: 'deepseek/deepseek-r1',
+  },
+];
+
+const ChatBotDemo = () => {
+  const [input, setInput] = useState('');
+  const [model, setModel] = useStatestring>(models[0].value);
+  const [webSearch, setWebSearch] = useState(false);
+  const { messages, sendMessage, status, regenerate } = useChat();
+
+  const handleSubmit = (message: PromptInputMessage) => {
+    const hasText = Boolean(message.text);
+    const hasAttachments = Boolean(message.files?.length);
+
+    if (!(hasText || hasAttachments)) {
+      return;
+    }
+
+    sendMessage(
+      {
+        text: message.text || 'Sent with attachments',
+        files: message.files
+      },
+      {
+        body: {
+          model: model,
+          webSearch: webSearch,
+        },
+      },
+    );
+    setInput('');
+  };
+
+  return (
+    div className="max-w-4xl mx-auto p-6 relative size-full h-screen">
+      div className="flex flex-col h-full">
+        Conversation className="h-full">
+          ConversationContent>
+            {messages.map((message) => (
+              div key={message.id}>
+                {message.role === 'assistant' && message.parts.filter((part) => part.type === 'source-url').length > 0 && (
+                  Sources>
+                    SourcesTrigger
+                      count={
+                        message.parts.filter(
+                          (part) => part.type === 'source-url',
+                        ).length
+                      }
+                    />
+                    {message.parts.filter((part) => part.type === 'source-url').map((part, i) => (
+                      SourcesContent key={`${message.id}-${i}`}>
+                        Source
+                          key={`${message.id}-${i}`}
+                          href={part.url}
+                          title={part.url}
+                        />
+                      SourcesContent>
+                    ))}
+                  Sources>
+                )}
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case 'text':
+                      return (
+                        Message key={`${message.id}-${i}`} from={message.role}>
+                          MessageContent>
+                            MessageResponse>
+                              {part.text}
+                            MessageResponse>
+                          MessageContent>
+                          {message.role === 'assistant' && i === messages.length - 1 && (
+                            MessageActions>
+                              MessageAction
+                                onClick={() => regenerate()}
+                                label="Retry"
+                              >
+                                RefreshCcwIcon className="size-3" />
+                              MessageAction>
+                              MessageAction
+                                onClick={() =>
+                                  navigator.clipboard.writeText(part.text)
+                                }
+                                label="Copy"
+                              >
+                                CopyIcon className="size-3" />
+                              MessageAction>
+                            MessageActions>
+                          )}
+                        Message>
+                      );
+                    case 'reasoning':
+                      return (
+                        Reasoning
+                          key={`${message.id}-${i}`}
+                          className="w-full"
+                          isStreaming={status === 'streaming' && i === message.parts.length - 1 && message.id === messages.at(-1)?.id}
+                        >
+                          ReasoningTrigger />
+                          ReasoningContent>{part.text}ReasoningContent>
+                        Reasoning>
+                      );
+                    default:
+                      return null;
+                  }
+                })}
+              div>
+            ))}
+            {status === 'submitted' && Loader />}
+          ConversationContent>
+          ConversationScrollButton />
+        Conversation>
+
+        PromptInput onSubmit={handleSubmit} className="mt-4" globalDrop multiple>
+          PromptInputHeader>
+            PromptInputAttachmentsDisplay />
+          PromptInputHeader>
+          PromptInputBody>
+            PromptInputTextarea
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
+            />
+          PromptInputBody>
+          PromptInputFooter>
+            PromptInputTools>
+              PromptInputActionMenu>
+                PromptInputActionMenuTrigger />
+                PromptInputActionMenuContent>
+                  PromptInputActionAddAttachments />
+                PromptInputActionMenuContent>
+              PromptInputActionMenu>
+              PromptInputButton
+                variant={webSearch ? 'default' : 'ghost'}
+                onClick={() => setWebSearch(!webSearch)}
+              >
+                GlobeIcon size={16} />
+                span>Searchspan>
+              PromptInputButton>
+              PromptInputSelect
+                onValueChange={(value) => {
+                  setModel(value);
+                }}
+                value={model}
+              >
+                PromptInputSelectTrigger>
+                  PromptInputSelectValue />
+                PromptInputSelectTrigger>
+                PromptInputSelectContent>
+                  {models.map((model) => (
+                    PromptInputSelectItem key={model.value} value={model.value}>
+                      {model.name}
+                    PromptInputSelectItem>
+                  ))}
+                PromptInputSelectContent>
+              PromptInputSelect>
+            PromptInputTools>
+            PromptInputSubmit disabled={!input && !status} status={status} />
+          PromptInputFooter>
+        PromptInput>
+      div>
+    div>
+  );
+};
+
+export default ChatBotDemo;
+```
+
+### Server
+
+Create a new route handler `app/api/chat/route.ts` and paste in the following code. We're using `perplexity/sonar` for web search because by default the model returns search results. We also pass `sendSources` and `sendReasoning` to `toUIMessageStreamResponse` in order to receive as parts on the frontend. The handler now also accepts file attachments from the client.
+
+app/api/chat/route.ts
+```
+import { streamText, UIMessage, convertToModelMessages } from 'ai';
+
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
+
+export async function POST(req: Request) {
+  const {
+    messages,
+    model,
+    webSearch,
+  }: {
+    messages: UIMessage[];
+    model: string;
+    webSearch: boolean;
+  } = await req.json();
+
+  const result = streamText({
+    model: webSearch ? 'perplexity/sonar' : model,
+    messages: await convertToModelMessages(messages),
+    system:
+      'You are a helpful assistant that can answer questions and help with tasks',
+  });
+
+  // send sources and reasoning back to the client
+  return result.toUIMessageStreamResponse({
+    sendSources: true,
+    sendReasoning: true,
+  });
+}
+```
+
+You now have a working chatbot app with file attachment support! The chatbot can handle both text and file inputs through the action menu. Feel free to explore other components like [`Tool`](/elements/en/elements/components/tool) or [`Task`](/elements/en/elements/components/task) to extend your app, or view the other examples.
