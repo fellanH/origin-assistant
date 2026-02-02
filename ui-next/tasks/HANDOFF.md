@@ -11,24 +11,21 @@
 
 ## Current State (2026-02-02)
 
-The UI works but has performance issues:
-- Messages jump/animate on history load
-- Session switching feels slow
-- State management has too many subscriptions
-- God component (page.tsx, 676 lines)
-- Streaming has double-bubble issue
+Phase 1 of the refactor is **COMPLETE**. The god component has been broken down into composable components with proper separation of concerns.
 
-### Key Files
+### Key Files (After Refactor)
 
 | File | Lines | Role |
 |------|-------|------|
-| `src/app/page.tsx` | 676 | Main page (god component) |
+| `src/app/page.tsx` | 283 | Layout orchestration (58% reduction) |
+| `src/components/chat-provider.tsx` | 221 | Session state context provider |
+| `src/components/chat-message-list.tsx` | 305 | Message list with smart animations |
+| `src/components/chat-content.tsx` | 196 | Chat area + input |
 | `src/lib/session-store.ts` | 895 | Zustand state management |
 | `src/lib/use-gateway.ts` | 217 | WebSocket connection + stats |
-| `src/lib/use-session.ts` | 352 | Session hooks |
-| `src/components/ai-elements/prompt-input.tsx` | 1263 | Input component |
+| `src/lib/use-session.ts` | ~400 | Session hooks + useSessionData |
 
-### Architecture
+### Architecture (After Refactor)
 
 ```
 Gateway (WebSocket)
@@ -37,9 +34,18 @@ use-gateway.ts (connection, events)
     ↓
 session-store.ts (Zustand store)
     ↓
-use-session.ts (React hooks)
+ChatProvider (context)
+    ├── useSessionData (optimized selector)
+    └── Actions (send, abort, regenerate)
     ↓
-page.tsx + components (render)
+page.tsx (layout)
+├── ChatContent
+│   ├── ActivityBar
+│   ├── ChatMessageList (smart animations)
+│   └── PromptInput
+├── SessionSidebar
+├── SettingsPanel
+└── MobileHeader
 ```
 
 ## Completed Tasks
@@ -250,6 +256,48 @@ interface ChatMessageListProps {
 **Result:** History loads instantly without animation cascade. Only new messages sent during the session animate in smoothly.
 
 **Output:** `tasks/task-6.md`
+
+### Task 7: Refactor page.tsx to Use New Components (2026-02-02)
+
+Refactored `page.tsx` to use ChatProvider, ChatMessageList, and other extracted components.
+
+**Line Count Reduction:**
+- **Before:** 676 lines
+- **After:** 283 lines (58% reduction)
+
+**Changes Made:**
+1. Wrapped content with `ChatProvider` for session state management
+2. Extracted `ChatContent` to `src/components/chat-content.tsx` (196 lines)
+   - Contains error banner, activity bar, conversation area, and input
+   - Uses `useChatContext` for all session data
+3. Extracted `SettingsPanel` to `src/components/settings-panel.tsx` (88 lines)
+4. Extracted `MobileHeader` to `src/components/mobile-header.tsx` (27 lines)
+5. Added `FaviconWithContext` wrapper to get status from ChatContext
+6. Removed `useSessionChat` — provider handles all session state
+7. Uses `useSessionField` directly for sidebar subagent metadata
+
+**New Component Architecture:**
+```
+page.tsx (283 lines)
+├── ChatProvider
+│   ├── FaviconWithContext
+│   └── ChatContent
+│       ├── ActivityBar
+│       ├── Conversation
+│       │   ├── SessionScrollHandler
+│       │   └── ChatMessageList
+│       └── PromptInput
+├── SessionSidebar
+├── SettingsPanel
+└── MobileHeader
+```
+
+**Files Created:**
+- `src/components/chat-content.tsx`
+- `src/components/settings-panel.tsx`
+- `src/components/mobile-header.tsx`
+
+**Output:** `tasks/task-7.md`
 
 ## In Progress
 
