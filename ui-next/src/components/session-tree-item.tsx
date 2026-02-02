@@ -41,25 +41,20 @@ type StatusBadgeProps = {
 };
 
 function StatusBadge({ status, duration }: StatusBadgeProps) {
-  const statusColors: Record<string, string> = {
-    spawning: "text-blue-500",
-    running: "text-yellow-500",
-    completed: "text-green-500",
-    error: "text-red-500",
-    timeout: "text-orange-500",
+  const statusConfig: Record<string, { color: string; icon: string; label: string }> = {
+    spawning: { color: "text-blue-400", icon: "◐", label: "Starting" },
+    running: { color: "text-amber-400", icon: "●", label: "Running" },
+    completed: { color: "text-emerald-500", icon: "✓", label: "Done" },
+    error: { color: "text-red-400", icon: "✗", label: "Error" },
+    timeout: { color: "text-orange-400", icon: "⏱", label: "Timeout" },
   };
   
-  const statusIcons: Record<string, string> = {
-    spawning: "⏳",
-    running: "🔄",
-    completed: "✓",
-    error: "✗",
-    timeout: "⏱",
-  };
+  const config = statusConfig[status] || { color: "text-muted-foreground", icon: "○", label: status };
   
   return (
-    <span className={cn("text-xs whitespace-nowrap", statusColors[status] || "text-muted-foreground")}>
-      {statusIcons[status] || ""} {duration !== undefined && formatDuration(duration)}
+    <span className={cn("text-[11px] whitespace-nowrap flex items-center gap-1", config.color)}>
+      <span className={status === "running" ? "animate-pulse" : ""}>{config.icon}</span>
+      <span>{duration !== undefined ? formatDuration(duration) : config.label}</span>
     </span>
   );
 }
