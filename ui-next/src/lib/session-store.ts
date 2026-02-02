@@ -93,6 +93,10 @@ export interface SessionData {
   eventQueue: GatewayEventFrame[]; // Buffer for race condition fix
   persistedSubagentIds: Set<string>;
   lastAccess: number; // For LRU eviction
+  
+  // Scroll state for session switching
+  isAtBottom: boolean; // Was user at bottom when leaving this session?
+  scrollOffset: number | null; // Scroll position if not at bottom
 }
 
 /**
@@ -114,6 +118,8 @@ function createEmptySession(key: string): SessionData {
     eventQueue: [],
     persistedSubagentIds: new Set(),
     lastAccess: Date.now(),
+    isAtBottom: true, // New sessions start at bottom
+    scrollOffset: null,
   };
 }
 
@@ -148,6 +154,9 @@ interface SessionStore {
   evictLRU: () => void;
   touchSession: (key: string) => void;
   clearAllSessions: () => void;
+  
+  // Scroll state
+  setScrollState: (key: string, isAtBottom: boolean, scrollOffset?: number | null) => void;
 }
 
 // =============================================================================
@@ -826,6 +835,14 @@ export const useSessionStore = create<SessionStore>()(
 
     clearAllSessions: () => {
       set({ sessions: new Map() });
+    },
+
+    setScrollState: (key: string, isAtBottom: boolean, scrollOffset?: number | null) => {
+      const { updateSession } = get();
+      updateSession(key, () => ({
+        isAtBottom,
+        scrollOffset: scrollOffset ?? null,
+      }));
     },
   }))
 );

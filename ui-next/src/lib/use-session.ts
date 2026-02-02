@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useMemo } from "react";
 import type { GatewayClient, GatewayEventFrame } from "./gateway";
 import {
   useSessionStore,
@@ -16,6 +16,31 @@ import {
 // Re-export types for convenience
 export type { ChatMessage, ChatStatus, ToolExecutionState, SubagentState, SessionData };
 export { useSession, useSessionField };
+
+/**
+ * Hook to manage scroll state for a session.
+ * Call setScrollState before switching sessions to preserve position.
+ */
+export function useSessionScroll(sessionKey: string) {
+  const isAtBottom = useSessionField(sessionKey, (s) => s.isAtBottom);
+  const scrollOffset = useSessionField(sessionKey, (s) => s.scrollOffset);
+  const setScrollState = useSessionStore((s) => s.setScrollState);
+
+  const saveScrollState = useCallback(
+    (atBottom: boolean, offset?: number | null) => {
+      setScrollState(sessionKey, atBottom, offset);
+    },
+    [sessionKey, setScrollState]
+  );
+
+  return {
+    isAtBottom,
+    scrollOffset,
+    saveScrollState,
+    // For the Conversation component: instant if at bottom, smooth otherwise
+    scrollBehavior: isAtBottom ? "instant" : "smooth",
+  };
+}
 
 /**
  * Initialize WebSocket event routing to the session store.

@@ -26,6 +26,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { EmptyState } from "@/components/empty-state";
 import { ActivityBar } from "@/components/activity-bar";
+import { SessionScrollHandler } from "@/components/session-scroll-handler";
 import {
 	CompactErrorBoundary,
 	ErrorBoundary,
@@ -425,6 +426,8 @@ export default function ChatPage() {
 				{/* Chat area */}
 				<div className="flex-1 flex flex-col px-4 md:px-6 py-4 overflow-hidden max-w-4xl mx-auto w-full">
 					<Conversation className="flex-1">
+						{/* Handle scroll state preservation on session switch */}
+						<SessionScrollHandler sessionKey={sessionKey} />
 						<SectionErrorBoundary label="Chat">
 							<ConversationContent>
 								{/* Loading skeleton while fetching history */}
