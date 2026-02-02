@@ -1,13 +1,13 @@
 ---
-summary: "About Cortana and its relationship to OpenClaw"
+summary: "About Origin and its relationship to OpenClaw"
 read_when:
   - Introducing the fork to newcomers
-title: "About Cortana"
+title: "About Origin"
 ---
 
-# About Cortana
+# About Origin
 
-**Cortana** is a neutral, de-branded fork of [OpenClaw](https://github.com/openclaw/openclaw), designed as a clean starting point for building your own AI assistant.
+**Origin** is a neutral, de-branded fork of [OpenClaw](https://github.com/openclaw/openclaw), designed as a clean starting point for building your own AI assistant.
 
 ## Why this fork
 

@@ -22,7 +22,6 @@ import {
 import { cn } from "@/lib/utils";
 import {
   CircleSmallIcon,
-  LoaderCircleIcon,
   MarsIcon,
   MarsStrokeIcon,
   NonBinaryIcon,
@@ -32,6 +31,7 @@ import {
   VenusAndMarsIcon,
   VenusIcon,
 } from "lucide-react";
+import { Loader } from "@/components/ai-elements/loader";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, useContext, useMemo } from "react";
 
@@ -457,7 +457,7 @@ export const VoiceSelectorPreview = ({
   let icon = <PlayIcon className="size-3" />;
 
   if (loading) {
-    icon = <LoaderCircleIcon className="size-3 animate-spin" />;
+    icon = <Loader size={12} />;
   } else if (playing) {
     icon = <PauseIcon className="size-3" />;
   }

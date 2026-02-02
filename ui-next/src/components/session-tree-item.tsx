@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDownIcon, ChevronRightIcon, Trash2Icon } from "lucide-react";
+import { ChevronDownIcon, ChevronRightIcon, Trash2Icon, EraserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getSessionIcon,
@@ -68,6 +68,7 @@ export type SessionTreeItemProps = {
   currentSessionKey: string;
   onSessionSelect: (key: string) => void;
   onDelete: (key: string) => void;
+  onClear: (key: string) => void;
   onToggleExpand: (key: string) => void;
   expandedKeys: Set<string>;
 };
@@ -77,6 +78,7 @@ export function SessionTreeItem({
   currentSessionKey,
   onSessionSelect,
   onDelete,
+  onClear,
   onToggleExpand,
   expandedKeys,
 }: SessionTreeItemProps) {
@@ -196,6 +198,25 @@ export function SessionTreeItem({
           </span>
         )}
         
+        {/* Clear button - only for local sessions with messages */}
+        {session.isLocal && session.messageCount !== undefined && session.messageCount > 0 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onClear(session.key);
+            }}
+            className={cn(
+              "p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all flex-shrink-0",
+              isActive
+                ? "hover:bg-primary-foreground/20 text-primary-foreground"
+                : "hover:bg-accent text-muted-foreground hover:text-foreground"
+            )}
+            title="Clear messages"
+          >
+            <EraserIcon className="w-3.5 h-3.5" />
+          </button>
+        )}
+        
         {/* Delete button - only for local sessions */}
         {session.isLocal && (
           <button
@@ -226,6 +247,7 @@ export function SessionTreeItem({
               currentSessionKey={currentSessionKey}
               onSessionSelect={onSessionSelect}
               onDelete={onDelete}
+              onClear={onClear}
               onToggleExpand={onToggleExpand}
               expandedKeys={expandedKeys}
             />

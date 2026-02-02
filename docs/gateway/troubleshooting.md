@@ -355,8 +355,8 @@ Known issue: When you send an image with ONLY a mention (no other text), WhatsAp
 
 **Workaround:** Add some text with the mention:
 
-- ❌ `@cortana` + image
-- ✅ `@cortana check this` + image
+- ❌ `@origin` + image
+- ✅ `@origin check this` + image
 
 ### Session Not Resuming
 

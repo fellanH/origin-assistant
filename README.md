@@ -1,4 +1,4 @@
-# Cortana
+# Origin
 
 > Personal AI assistant built on OpenClaw
 
@@ -6,9 +6,9 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
-Cortana is a personal fork of [OpenClaw](https://github.com/openclaw/openclaw) — streamlined, de-branded, and optimized as a neutral template for building your own AI assistant.
+Origin is a personal fork of [OpenClaw](https://github.com/openclaw/openclaw) — streamlined, de-branded, and optimized as a neutral template for building your own AI assistant.
 
-## Why Cortana?
+## Why Origin?
 
 - **Clean slate** — Stripped of upstream branding and opinions
 - **Simpler setup** — Clearer docs for non-technical users
@@ -21,20 +21,20 @@ Cortana is a personal fork of [OpenClaw](https://github.com/openclaw/openclaw) �
 **Requirements:** Node 22+
 
 ```bash
-git clone https://github.com/FellanH/cortana.git
-cd cortana
+git clone https://github.com/FellanH/origin.git
+cd origin
 ./scripts/quickstart.sh
 ```
 
-This will install dependencies, build the project, create a `cortana` alias, and run the onboarding wizard.
+This will install dependencies, build the project, create a `origin` alias, and run the onboarding wizard.
 
-After setup: `cortana <command>`
+After setup: `origin <command>`
 
 ## Manual Setup
 
 ```bash
-git clone https://github.com/FellanH/cortana.git
-cd cortana
+git clone https://github.com/FellanH/origin.git
+cd origin
 pnpm install
 pnpm build
 ```
@@ -49,7 +49,7 @@ pnpm openclaw <command>
 node dist/entry-bootstrap.js <command>
 
 # Via alias (add to ~/.bashrc or ~/.zshrc)
-alias cortana='node /path/to/cortana/dist/entry-bootstrap.js'
+alias origin='node /path/to/origin/dist/entry-bootstrap.js'
 ```
 
 > **Note:** The global `openclaw` command (from `npm install -g openclaw`) runs the upstream package, not your fork.
@@ -65,7 +65,7 @@ Creates a LaunchAgent (macOS) or systemd service (Linux) for your fork.
 ### Onboard
 
 ```bash
-cortana onboard
+origin onboard
 ```
 
 ## Configuration

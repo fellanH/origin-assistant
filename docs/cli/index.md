@@ -1,5 +1,5 @@
 ---
-summary: "Cortana CLI reference for commands, subcommands, and options"
+summary: "Origin CLI reference for commands, subcommands, and options"
 read_when:
   - Adding or modifying CLI commands or options
   - Documenting new command surfaces
@@ -10,7 +10,7 @@ title: "CLI Reference"
 
 This page describes the current CLI behavior. If commands change, update this doc.
 
-**Note for fork users:** The internal CLI command is `openclaw`, but fork users typically create a `cortana` shell alias. Both work identically — just substitute `cortana` for `openclaw` in the examples below.
+**Note for fork users:** The internal CLI command is `openclaw`, but fork users typically create a `origin` shell alias. Both work identically — just substitute `origin` for `openclaw` in the examples below.
 
 ## Command pages
 
@@ -59,7 +59,7 @@ This page describes the current CLI behavior. If commands change, update this do
 - `--dev`: isolate state under `~/.openclaw-dev` and shift default ports.
 - `--profile <name>`: isolate state under `~/.openclaw-<name>`.
 - `--no-color`: disable ANSI colors.
-- `--update`: shorthand for `cortana update` (source installs only).
+- `--update`: shorthand for `origin update` (source installs only).
 - `-V`, `--version`, `-v`: print version and exit.
 
 ## Output styling
@@ -72,7 +72,7 @@ This page describes the current CLI behavior. If commands change, update this do
 
 ## Color palette
 
-Cortana uses a shared palette for CLI output.
+Origin uses a shared palette for CLI output.
 
 - `accent` (#FF5A2D): headings, labels, primary highlights.
 - `accentBright` (#FF7A3D): command names, emphasis.
@@ -88,7 +88,7 @@ Palette source of truth: `src/terminal/palette.ts`.
 ## Command tree
 
 ```
-cortana [--dev] [--profile <name>] <command>
+origin [--dev] [--profile <name>] <command>
   setup
   onboard
   configure
@@ -239,23 +239,23 @@ cortana [--dev] [--profile <name>] <command>
   tui
 ```
 
-Note: plugins can add additional top-level commands (for example `cortana voicecall`).
+Note: plugins can add additional top-level commands (for example `origin voicecall`).
 
 ## Security
 
-- `cortana security audit` — audit config + local state for common security foot-guns.
-- `cortana security audit --deep` — best-effort live Gateway probe.
-- `cortana security audit --fix` — tighten safe defaults and chmod state/config.
+- `origin security audit` — audit config + local state for common security foot-guns.
+- `origin security audit --deep` — best-effort live Gateway probe.
+- `origin security audit --fix` — tighten safe defaults and chmod state/config.
 
 ## Plugins
 
 Manage extensions and their config:
 
-- `cortana plugins list` — discover plugins (use `--json` for machine output).
-- `cortana plugins info <id>` — show details for a plugin.
-- `cortana plugins install <path|.tgz|npm-spec>` — install a plugin (or add a plugin path to `plugins.load.paths`).
-- `cortana plugins enable <id>` / `disable <id>` — toggle `plugins.entries.<id>.enabled`.
-- `cortana plugins doctor` — report plugin load errors.
+- `origin plugins list` — discover plugins (use `--json` for machine output).
+- `origin plugins info <id>` — show details for a plugin.
+- `origin plugins install <path|.tgz|npm-spec>` — install a plugin (or add a plugin path to `plugins.load.paths`).
+- `origin plugins enable <id>` / `disable <id>` — toggle `plugins.entries.<id>.enabled`.
+- `origin plugins doctor` — report plugin load errors.
 
 Most plugin changes require a gateway restart. See [/plugin](/plugin).
 
@@ -263,9 +263,9 @@ Most plugin changes require a gateway restart. See [/plugin](/plugin).
 
 Vector search over `MEMORY.md` + `memory/*.md`:
 
-- `cortana memory status` — show index stats.
-- `cortana memory index` — reindex memory files.
-- `cortana memory search "<query>"` — semantic search over memory.
+- `origin memory status` — show index stats.
+- `origin memory index` — reindex memory files.
+- `origin memory search "<query>"` — semantic search over memory.
 
 ## Chat slash commands
 
@@ -345,7 +345,7 @@ Interactive configuration wizard (models, channels, skills, gateway).
 
 ### `config`
 
-Non-interactive config helpers (get/set/unset). Running `cortana config` with no
+Non-interactive config helpers (get/set/unset). Running `origin config` with no
 subcommand launches the wizard.
 
 Subcommands:
@@ -374,8 +374,8 @@ Manage chat channel accounts (WhatsApp/Telegram/Discord/Google Chat/Slack/Matter
 Subcommands:
 
 - `channels list`: show configured channels and auth profiles.
-- `channels status`: check gateway reachability and channel health (`--probe` runs extra checks; use `cortana health` or `cortana status --deep` for gateway health probes).
-- Tip: `channels status` prints warnings with suggested fixes when it can detect common misconfigurations (then points you to `cortana doctor`).
+- `channels status`: check gateway reachability and channel health (`--probe` runs extra checks; use `origin health` or `origin status --deep` for gateway health probes).
+- Tip: `channels status` prints warnings with suggested fixes when it can detect common misconfigurations (then points you to `origin doctor`).
 - `channels logs`: show recent channel logs from the gateway log file.
 - `channels add`: wizard-style setup when no flags are passed; flags switch to non-interactive mode.
 - `channels remove`: disable by default; pass `--delete` to remove config entries without prompts.
@@ -415,11 +415,11 @@ More detail: [/concepts/oauth](/concepts/oauth)
 Examples:
 
 ```bash
-cortana channels add --channel telegram --account alerts --name "Alerts Bot" --token $TELEGRAM_BOT_TOKEN
-cortana channels add --channel discord --account work --name "Work Bot" --token $DISCORD_BOT_TOKEN
-cortana channels remove --channel discord --account work --delete
-cortana channels status --probe
-cortana status --deep
+origin channels add --channel telegram --account alerts --name "Alerts Bot" --token $TELEGRAM_BOT_TOKEN
+origin channels add --channel discord --account work --name "Work Bot" --token $DISCORD_BOT_TOKEN
+origin channels remove --channel discord --account work --delete
+origin channels status --probe
+origin status --deep
 ```
 
 ### `skills`
@@ -488,8 +488,8 @@ Subcommands:
 
 Examples:
 
-- `cortana message send --target +15555550123 --message "Hi"`
-- `cortana message poll --channel discord --target channel:123 --poll-question "Snack?" --poll-option Pizza --poll-option Sushi`
+- `origin message send --target +15555550123 --message "Hi"`
+- `origin message poll --channel discord --target channel:123 --poll-question "Snack?" --poll-option Pizza --poll-option Sushi`
 
 ### `agent`
 
@@ -574,12 +574,12 @@ Notes:
 
 ### Usage tracking
 
-Cortana can surface provider usage/quota when OAuth/API creds are available.
+Origin can surface provider usage/quota when OAuth/API creds are available.
 
 Surfaces:
 
 - `/status` (adds a short provider usage line when available)
-- `cortana status --usage` (prints full provider breakdown)
+- `origin status --usage` (prints full provider breakdown)
 - macOS menu bar (Usage section under Context)
 
 Notes:
@@ -707,11 +707,11 @@ Notes:
 Examples:
 
 ```bash
-cortana logs --follow
-cortana logs --limit 200
-cortana logs --plain
-cortana logs --json
-cortana logs --no-color
+origin logs --follow
+origin logs --limit 200
+origin logs --plain
+origin logs --json
+origin logs --no-color
 ```
 
 ### `gateway <subcommand>`
@@ -745,13 +745,13 @@ Preferred Anthropic auth (setup-token):
 
 ```bash
 claude setup-token
-cortana models auth setup-token --provider anthropic
-cortana models status
+origin models auth setup-token --provider anthropic
+origin models status
 ```
 
 ### `models` (root)
 
-`cortana models` is an alias for `models status`.
+`origin models` is an alias for `models status`.
 
 Root options:
 
@@ -907,7 +907,7 @@ All `cron` commands accept `--url`, `--token`, `--timeout`, `--expect-final`.
 ## Node host
 
 `node` runs a **headless node host** or manages it as a background service. See
-[`cortana node`](/cli/node).
+[`origin node`](/cli/node).
 
 Subcommands:
 
@@ -962,7 +962,7 @@ Location:
 
 ## Browser
 
-Browser control CLI (dedicated Chrome/Brave/Edge/Chromium). See [`cortana browser`](/cli/browser) and the [Browser tool](/tools/browser).
+Browser control CLI (dedicated Chrome/Brave/Edge/Chromium). See [`origin browser`](/cli/browser) and the [Browser tool](/tools/browser).
 
 Common options:
 

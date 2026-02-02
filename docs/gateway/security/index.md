@@ -528,7 +528,7 @@ Details: [Logging](/gateway/logging)
     "list": [
       {
         "id": "main",
-        "groupChat": { "mentionPatterns": ["@cortana", "@mybot"] }
+        "groupChat": { "mentionPatterns": ["@origin", "@mybot"] }
       }
     ]
   }

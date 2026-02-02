@@ -51,7 +51,7 @@ openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
 Override fields explicitly:
 
 ```bash
-cortana agents set-identity --agent main --name "Cortana" --emoji "•" --avatar avatars/assistant.png
+origin agents set-identity --agent main --name "Origin" --emoji "•" --avatar avatars/assistant.png
 ```
 
 Config sample:

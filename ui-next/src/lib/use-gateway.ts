@@ -4,8 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GatewayClient, GatewayEventFrame, GatewayHelloOk, SessionStats } from "./gateway";
 import {
   getLocalMessages,
+  getLocalSessions,
   addLocalMessage,
   saveLocalMessages,
+  updateSessionLabel,
+  isGenericSessionLabel,
+  generateLabelFromContent,
   type StoredMessage,
   type StoredMessagePart,
 } from "./storage";
@@ -487,6 +491,8 @@ export function useOpenClawChat(
   const [error, setError] = useState<string | null>(null);
   // Track history loading state for smoother transitions
   const [historyLoading, setHistoryLoading] = useState(false);
+  // Message queue for when user sends messages while processing
+  const [messageQueue, setMessageQueue] = useState<string[]>([]);
 
   // Live tool executions (ephemeral, not persisted)
   const [toolExecutions, setToolExecutions] = useState<Map<string, ToolExecutionState>>(
@@ -666,6 +672,21 @@ export function useOpenClawChat(
               parts: finalParts?.map(toStoredPart),
               timestamp: assistantMsg.timestamp!,
             });
+
+            // Auto-name session from first user message if label is generic
+            const currentSession = getLocalSessions().find(
+              (s) => s.key === sessionKeyRef.current
+            );
+            if (currentSession && isGenericSessionLabel(currentSession.label)) {
+              // Find first user message
+              const allMessages = [...messagesRef.current, assistantMsg];
+              const firstUserMsg = allMessages.find((m) => m.role === "user");
+              if (firstUserMsg?.content) {
+                const autoLabel = generateLabelFromContent(firstUserMsg.content);
+                updateSessionLabel(sessionKeyRef.current, autoLabel);
+              }
+            }
+
             // Notify parent that a message was completed (for sidebar refresh)
             onMessageSent?.();
 
@@ -910,14 +931,15 @@ export function useOpenClawChat(
     }
   }, [status, toolExecutions.size]);
 
-  // Clear toolExecutions and subagents when session changes
+  // Clear toolExecutions, subagents, and message queue when session changes
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setToolExecutions(new Map());
     setSubagents(new Map());
+    setMessageQueue([]);
   }, [sessionKey]);
 
-  const sendMessage = useCallback(
+  const sendMessageInternal = useCallback(
     async (content: string) => {
       if (!client || !content.trim()) return;
 
@@ -955,6 +977,31 @@ export function useOpenClawChat(
     },
     [client, sessionKey]
   );
+
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!client || !content.trim()) return;
+
+      // If busy, queue the message
+      if (status !== "idle") {
+        setMessageQueue((prev) => [...prev, content.trim()]);
+        return;
+      }
+
+      // Otherwise send immediately
+      await sendMessageInternal(content);
+    },
+    [client, status, sendMessageInternal]
+  );
+
+  // Process queue when status becomes idle
+  useEffect(() => {
+    if (status === "idle" && messageQueue.length > 0) {
+      const [next, ...rest] = messageQueue;
+      setMessageQueue(rest);
+      sendMessageInternal(next);
+    }
+  }, [status, messageQueue, sendMessageInternal]);
 
   const abort = useCallback(async () => {
     if (!client) return;
@@ -1032,5 +1079,7 @@ export function useOpenClawChat(
     isSubmitted: status === "submitted",
     canAbort: status === "streaming" || status === "submitted",
     historyLoading,
+    messageQueue,
+    queueLength: messageQueue.length,
   };
 }

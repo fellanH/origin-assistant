@@ -1,92 +1,57 @@
-# Project Context — Cortana
+# Project Context — Origin
 
-> Personal AI assistant. Fork of OpenClaw, rebranded as "Cortana".
+> Personal AI assistant. Fork of OpenClaw, rebranded as "Origin".
 
 ## Current State
 
 **ui-next (Next.js)** — Primary focus
-- ✅ Phase 1-3 complete (message model, tool events, session tree)
+- ✅ Phase 1-4 complete (message model, tool events, session tree, layout)
 - ✅ 48 AI Elements components implemented
-- ✅ Context/token display in header
-- ✅ Subagent tracking with live status
-- ⚠️ Some polish bugs (see BUGS-AND-POLISH.md)
+- ✅ Session model fixed: all chats equal, auto-naming, clear session
+- ✅ Responsive sidebar (mobile/tablet)
 - Build passing
 
-**Next up:** Fix bugs, then Phase 4 layout redesign
+**Backend** — Full access to OpenClaw source:
+- `src/gateway/` — WebSocket server, routing
+- `src/agents/` — Orchestration, subagents, tools
+- `src/sessions/` — Session management
 
-## Active Bugs
+## Recent Session (18:04)
 
-1. **New session label** — Shows "agent session" instead of proper main session label
-2. **Message display** — Occasional stray brackets, missing formatting (intermittent)
+Completed:
+- Removed "Main Chat" special status — all sessions equal
+- Auto-naming from first user message
+- Clear session action (eraser icon)
+- Any session can be deleted
 
-See `ui-next/BUGS-AND-POLISH.md` for details.
-
-## Recent Decisions
-
-- Using Vercel AI Elements component library
-- Dual-stream architecture (chat + agent events)
-- Hierarchical session sidebar (subagents nest under parents)
-- Added proxy rule: always verify Claude Proxy before spawning subagents
-- PROJECT_CONTEXT.md pattern for session handoffs
+In progress discussion:
+- Message queueing (send while processing)
+- Activity status bar (show background state)
+- Better loading/feedback states
 
 ## Pickup
 
-- [ ] Debug session label issue
-- [ ] Debug message display issues
-- [ ] Then Phase 4 layout redesign OR Neonode work
-
-## Rebrand to Cortana — ✅ DONE
-
-Completed 2026-02-02:
-- [x] Directory renamed: `openclaw-fork` → `cortana`
-- [x] Git remote: `github.com/fellanH/cortana.git`
-- [x] README.md rewritten with Cortana branding
-- [x] Documentation references updated
-
-Preserved for upstream compatibility:
-- Hook names (`useOpenClawChat`)
-- Storage keys (`OPENCLAW_LEGACY_KEY`)
-- Config paths (`~/.openclaw/`)
-- CHANGELOG.md (historical record)
+- [ ] Test session model changes
+- [ ] Add message queue UI
+- [ ] Add activity status bar
+- [ ] Demo to colleague tomorrow
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `ui-next/IMPROVEMENTS.md` | Full status + backlog |
-| `ui-next/BUGS-AND-POLISH.md` | Active bugs + polish items |
-| `ui-next/PHASE-4-LAYOUT-REDESIGN.md` | Next phase plan |
+| `ui-next/BUGS-AND-POLISH.md` | Active bugs + session model improvements |
 | `ui-next/src/app/page.tsx` | Main chat UI |
-| `ui-next/src/lib/use-gateway.ts` | Gateway hooks |
+| `ui-next/src/lib/use-gateway.ts` | Gateway hooks, auto-naming |
+| `ui-next/src/lib/storage.ts` | Session storage, clear/update |
 
-## Open Questions
+## Backend Deep Dive (Future)
 
-- Should subagent cards persist after completion or fade?
-- Session tree expand/collapse state — sync across devices?
+Key files for agent orchestration:
+- `src/agents/lanes.ts` — Concurrency control
+- `src/agents/subagent-registry.ts` — Subagent lifecycle
+- `src/agents/pi-embedded-runner.ts` — Main agent loop
 
 ---
-_Last updated: 2026-02-02 12:47_
-
----
-
-## Branding Notes (added 2026-02-02)
-
-### Visual Identity Reference
-Based on original Cortana design language:
-
-- **Form:** Two nested circles, animated
-- **Animations:** Indicate states (searching, talking, thinking, idle)
-- **Colors:** 
-  - Background: Black or white
-  - Circles: Shades of blue
-  
-### Animation States to Consider
-- Idle: Subtle pulse
-- Listening: Expanding rings
-- Thinking/Processing: Rotating or morphing
-- Speaking: Wave-like motion
-
-### Implementation Ideas
-- CSS animations for web dashboard
-- Lottie/SVG for smooth cross-platform
-- Keep it minimal — two circles, blue tones, clean
+_Last updated: 2026-02-02 18:05_

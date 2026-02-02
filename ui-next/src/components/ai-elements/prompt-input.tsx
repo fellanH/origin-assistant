@@ -38,11 +38,11 @@ import type { ChatStatus, FileUIPart, SourceDocumentUIPart } from "ai";
 import {
   CornerDownLeftIcon,
   ImageIcon,
-  Loader2Icon,
   PlusIcon,
   SquareIcon,
   XIcon,
 } from "lucide-react";
+import { Loader } from "@/components/ai-elements/loader";
 import { nanoid } from "nanoid";
 import {
   type ChangeEvent,
@@ -1033,7 +1033,7 @@ export const PromptInputSubmit = ({
   let Icon = <CornerDownLeftIcon className="size-4" />;
 
   if (status === "submitted") {
-    Icon = <Loader2Icon className="size-4 animate-spin" />;
+    Icon = <Loader size={16} />;
   } else if (status === "streaming") {
     Icon = <SquareIcon className="size-4" />;
   } else if (status === "error") {

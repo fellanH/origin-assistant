@@ -10,11 +10,11 @@ title: "Getting Started"
 
 Goal: go from **zero** to **first working chat** (with sane defaults) as quickly as possible.
 
-Fastest chat: open the Control UI (no channel setup needed). Run `cortana dashboard`
+Fastest chat: open the Control UI (no channel setup needed). Run `origin dashboard`
 and chat in the browser, or open `http://127.0.0.1:18789/` on the gateway host.
 Docs: [Dashboard](/web/dashboard) and [Control UI](/web/control-ui).
 
-Recommended path: use the **CLI onboarding wizard** (`cortana onboard`). It sets up:
+Recommended path: use the **CLI onboarding wizard** (`origin onboard`). It sets up:
 
 - model/auth (OAuth recommended)
 - gateway settings
@@ -47,7 +47,7 @@ run on host, set an explicit per-agent override:
 - Node `>=22`
 - `pnpm` (optional; recommended if you build from source)
 - **Recommended:** Brave Search API key for web search. Easiest path:
-  `cortana configure --section web` (stores `tools.web.search.apiKey`).
+  `origin configure --section web` (stores `tools.web.search.apiKey`).
   See [Web tools](/tools/web).
 
 macOS: if you plan to build the apps, install Xcode / CLT. For the CLI + gateway only, Node is enough.
@@ -57,17 +57,17 @@ Windows: use **WSL2** (Ubuntu recommended). WSL2 is strongly recommended; native
 
 ```bash
 git clone <your-fork-url>
-cd cortana
+cd origin
 ./scripts/quickstart.sh
 ```
 
 The quickstart script will:
 - Install dependencies (pnpm)
 - Build the project
-- Create a `cortana` shell alias
+- Create a `origin` shell alias
 - Run the onboarding wizard
 
-After setup, use `cortana <command>` to run your fork.
+After setup, use `origin <command>` to run your fork.
 
 ### Manual setup
 
@@ -75,7 +75,7 @@ If you prefer to set things up manually:
 
 ```bash
 git clone <your-fork-url>
-cd cortana
+cd origin
 
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
@@ -95,7 +95,7 @@ pnpm openclaw onboard --install-daemon
 ## 2) Run the onboarding wizard (and install the service)
 
 ```bash
-cortana onboard --install-daemon
+origin onboard --install-daemon
 ```
 
 What you'll choose:
@@ -123,13 +123,13 @@ Headless/server tip: do OAuth on a normal machine first, then copy `oauth.json` 
 If you installed the service during onboarding, the Gateway should already be running:
 
 ```bash
-cortana gateway status
+origin gateway status
 ```
 
 Manual run (foreground):
 
 ```bash
-cortana gateway --port 18789 --verbose
+origin gateway --port 18789 --verbose
 ```
 
 Dashboard (local loopback): `http://127.0.0.1:18789/`
@@ -141,9 +141,9 @@ channels. If you use WhatsApp or Telegram, run the Gateway with **Node**.
 ## 3.5) Quick verify (2 min)
 
 ```bash
-cortana status
-cortana health
-cortana security audit --deep
+origin status
+origin health
+origin security audit --deep
 ```
 
 ## 4) Pair + connect your first chat surface
@@ -151,7 +151,7 @@ cortana security audit --deep
 ### WhatsApp (QR login)
 
 ```bash
-cortana channels login
+origin channels login
 ```
 
 Scan via WhatsApp Settings Linked Devices.
@@ -174,26 +174,26 @@ Default posture: unknown DMs get a short code and messages are not processed unt
 If your first DM gets no reply, approve the pairing:
 
 ```bash
-cortana pairing list whatsapp
-cortana pairing approve whatsapp <code>
+origin pairing list whatsapp
+origin pairing approve whatsapp <code>
 ```
 
 Pairing doc: [Pairing](/start/pairing)
 
 ## From source (development)
 
-If you're hacking on Cortana itself, run from source:
+If you're hacking on Origin itself, run from source:
 
 ```bash
 git clone <your-fork-url>
-cd cortana
+cd origin
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
 pnpm build
-cortana onboard --install-daemon
+origin onboard --install-daemon
 ```
 
-If you don't have the `cortana` alias yet, run the onboarding step via `pnpm openclaw ...` from the repo.
+If you don't have the `origin` alias yet, run the onboarding step via `pnpm openclaw ...` from the repo.
 `pnpm build` also bundles A2UI assets; if you need to run just that step, use `pnpm canvas:a2ui:bundle`.
 
 Gateway (from this repo):
@@ -207,13 +207,13 @@ node openclaw.mjs gateway --port 18789 --verbose
 In a new terminal, send a test message:
 
 ```bash
-cortana message send --target +15555550123 --message "Hello from Cortana"
+origin message send --target +15555550123 --message "Hello from Origin"
 ```
 
-If `cortana health` shows "no auth configured", go back to the wizard and set OAuth/key auth — the agent won't be able to respond without it.
+If `origin health` shows "no auth configured", go back to the wizard and set OAuth/key auth — the agent won't be able to respond without it.
 
-Tip: `cortana status --all` is the best pasteable, read-only debug report.
-Health probes: `cortana health` (or `cortana status --deep`) asks the running gateway for a health snapshot.
+Tip: `origin status --all` is the best pasteable, read-only debug report.
+Health probes: `origin health` (or `origin status --deep`) asks the running gateway for a health snapshot.
 
 ## Next steps (optional, but great)
 

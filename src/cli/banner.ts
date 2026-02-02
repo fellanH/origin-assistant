@@ -39,7 +39,7 @@ export function formatCliBannerLine(version: string, options: BannerOptions = {}
   const commitLabel = commit ?? "unknown";
   const tagline = pickTagline(options);
   const rich = options.richTty ?? isRich();
-  const title = "Cortana";
+  const title = "Origin";
   const prefix = "";
   const columns = options.columns ?? process.stdout.columns ?? 120;
   const plainFullLine = `${title} ${version} (${commitLabel}) — ${tagline}`;
@@ -64,20 +64,20 @@ export function formatCliBannerLine(version: string, options: BannerOptions = {}
   return `${line1}\n${line2}`;
 }
 
-const CORTANA_ASCII = [
+const ORIGIN_ASCII = [
   "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
   "██░▄▄▀██░▄▄▄░██░▄▄▀██▄░▄██░▄▄▀██░▀██░██░▄▄▀██████████",
   "██░█████░███░██░▀▀▄███░███░▀▀░██░█░█░██░▀▀░██████████",
   "██░▀▀▄██░▀▀▀░██░██░██▀░▀██░██░██░██▄░██░██░██████████",
   "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀",
-  "                    CORTANA                        ",
+  "                    ORIGIN                        ",
   " ",
 ];
 
 export function formatCliBannerArt(options: BannerOptions = {}): string {
   const rich = options.richTty ?? isRich();
   if (!rich) {
-    return CORTANA_ASCII.join("\n");
+    return ORIGIN_ASCII.join("\n");
   }
 
   const colorChar = (ch: string) => {
@@ -93,9 +93,9 @@ export function formatCliBannerArt(options: BannerOptions = {}): string {
     return theme.muted(ch);
   };
 
-  const colored = CORTANA_ASCII.map((line) => {
-    if (line.includes("CORTANA")) {
-      return theme.muted("                    ") + theme.info("CORTANA");
+  const colored = ORIGIN_ASCII.map((line) => {
+    if (line.includes("ORIGIN")) {
+      return theme.muted("                    ") + theme.info("ORIGIN");
     }
     return splitGraphemes(line).map(colorChar).join("");
   });

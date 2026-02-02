@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Cortana Dev Helper
+# Origin Dev Helper
 # Common development tasks in one place
 #
 
@@ -19,7 +19,7 @@ NC='\033[0m'
 
 show_help() {
     echo ""
-    echo -e "${CYAN}Cortana Dev Helper${NC}"
+    echo -e "${CYAN}Origin Dev Helper${NC}"
     echo ""
     echo "Usage: ./scripts/dev-helper.sh <command>"
     echo ""

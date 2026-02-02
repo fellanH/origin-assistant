@@ -4,8 +4,8 @@ import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ai-elements/loader";
 import {
-  Loader2,
   CheckCircle,
   XCircle,
   Clock,
@@ -26,20 +26,20 @@ export type SubagentCardProps = {
 
 const statusConfig = {
   spawning: {
-    icon: Loader2,
+    icon: null, // Uses Loader component
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     borderColor: "border-blue-500/20",
     label: "Spawning...",
-    animate: true,
+    isLoading: true,
   },
   running: {
-    icon: Loader2,
+    icon: null, // Uses Loader component
     color: "text-yellow-500",
     bgColor: "bg-yellow-500/10",
     borderColor: "border-yellow-500/20",
     label: "Running",
-    animate: true,
+    isLoading: true,
   },
   completed: {
     icon: CheckCircle,
@@ -47,7 +47,7 @@ const statusConfig = {
     bgColor: "bg-green-500/10",
     borderColor: "border-green-500/20",
     label: "Completed",
-    animate: false,
+    isLoading: false,
   },
   error: {
     icon: XCircle,
@@ -55,7 +55,7 @@ const statusConfig = {
     bgColor: "bg-red-500/10",
     borderColor: "border-red-500/20",
     label: "Error",
-    animate: false,
+    isLoading: false,
   },
   timeout: {
     icon: Clock,
@@ -63,7 +63,7 @@ const statusConfig = {
     bgColor: "bg-orange-500/10",
     borderColor: "border-orange-500/20",
     label: "Timed out",
-    animate: false,
+    isLoading: false,
   },
 };
 
@@ -86,7 +86,7 @@ export const SubagentCard = memo(function SubagentCard({
 }: SubagentCardProps) {
   const config = statusConfig[subagent.status];
   const Icon = config.icon;
-  const isActive = subagent.status === "spawning" || subagent.status === "running";
+  const isActive = config.isLoading;
   const [expanded, setExpanded] = useState(isActive);
   const [elapsed, setElapsed] = useState(0);
 
@@ -138,9 +138,11 @@ export const SubagentCard = memo(function SubagentCard({
           )}
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <Icon
-            className={cn("size-4", config.color, config.animate && "animate-spin")}
-          />
+          {isActive ? (
+            <Loader size={16} className={config.color} />
+          ) : (
+            Icon && <Icon className={cn("size-4", config.color)} />
+          )}
           <Badge
             variant={isActive ? "default" : "outline"}
             className={cn("text-xs", !isActive && config.color)}

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Cortana Quick Start Script
+# Origin Quick Start Script
 # Automates initial setup for new users cloning or forking this repo.
 #
 
@@ -28,7 +28,7 @@ echo "  █░▄▄▀██░▄▄▄░██░▄▄▀██▄░▄█
 echo "  █░█████░███░██░▀▀▄███░███░▀▀░██░█░█░██░▀▀░█"
 echo "  █░▀▀▄██░▀▀▀░██░██░██▀░▀██░██░██░██▄░██░██░█"
 echo "  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
-echo "           CORTANA QUICK START"
+echo "           ORIGIN QUICK START"
 echo ""
 
 # Check prerequisites
@@ -73,15 +73,15 @@ detect_shell_config() {
 }
 
 SHELL_CONFIG=$(detect_shell_config)
-ALIAS_LINE="alias cortana='node $ENTRY_POINT'"
+ALIAS_LINE="alias origin='node $ENTRY_POINT'"
 
 # Add alias if not already present
-info "Setting up 'cortana' alias..."
-if grep -q "alias cortana=" "$SHELL_CONFIG" 2>/dev/null; then
-    warn "Alias 'cortana' already exists in $SHELL_CONFIG"
+info "Setting up 'origin' alias..."
+if grep -q "alias origin=" "$SHELL_CONFIG" 2>/dev/null; then
+    warn "Alias 'origin' already exists in $SHELL_CONFIG"
 else
     echo "" >> "$SHELL_CONFIG"
-    echo "# Cortana CLI alias" >> "$SHELL_CONFIG"
+    echo "# Origin CLI alias" >> "$SHELL_CONFIG"
     echo "$ALIAS_LINE" >> "$SHELL_CONFIG"
     success "Added alias to $SHELL_CONFIG"
 fi
@@ -100,11 +100,11 @@ if [ -f "$CONFIG_FILE" ]; then
         echo ""
         success "Quick start complete!"
         echo ""
-        echo "You can now use Cortana:"
-        echo "  cortana --help          Show all commands"
-        echo "  cortana onboard         Run setup wizard"
-        echo "  cortana gateway run     Start the gateway"
-        echo "  cortana channels status Check channel status"
+        echo "You can now use Origin:"
+        echo "  origin --help          Show all commands"
+        echo "  origin onboard         Run setup wizard"
+        echo "  origin gateway run     Start the gateway"
+        echo "  origin channels status Check channel status"
         echo ""
         echo "Restart your terminal or run: source $SHELL_CONFIG"
         exit 0
@@ -120,9 +120,9 @@ node "$ENTRY_POINT" onboard
 echo ""
 success "Quick start complete!"
 echo ""
-echo "You can now use Cortana:"
-echo "  cortana --help          Show all commands"
-echo "  cortana gateway run     Start the gateway"
-echo "  cortana channels status Check channel status"
+echo "You can now use Origin:"
+echo "  origin --help          Show all commands"
+echo "  origin gateway run     Start the gateway"
+echo "  origin channels status Check channel status"
 echo ""
 echo "Restart your terminal or run: source $SHELL_CONFIG"

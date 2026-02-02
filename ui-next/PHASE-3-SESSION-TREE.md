@@ -353,13 +353,13 @@ import { SessionTreeItem } from "./session-tree-item";
 // Add state for expanded keys
 const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => {
   if (typeof window === "undefined") return new Set(["agent:main:main"]);
-  const saved = localStorage.getItem("cortana.sidebar.expanded");
+  const saved = localStorage.getItem("origin.sidebar.expanded");
   return saved ? new Set(JSON.parse(saved)) : new Set(["agent:main:main"]);
 });
 
 // Save expanded state
 useEffect(() => {
-  localStorage.setItem("cortana.sidebar.expanded", JSON.stringify([...expandedKeys]));
+  localStorage.setItem("origin.sidebar.expanded", JSON.stringify([...expandedKeys]));
 }, [expandedKeys]);
 
 // Build tree from sessions

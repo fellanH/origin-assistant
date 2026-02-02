@@ -6,7 +6,7 @@ summary: "Community-built projects and integrations from the upstream OpenClaw p
 
 # Showcase
 
-Real projects from the upstream OpenClaw community. These showcase what's possible with the platform that Cortana is built on.
+Real projects from the upstream OpenClaw community. These showcase what's possible with the platform that Origin is built on.
 
 <Info>
 **Note:** These projects are from the upstream OpenClaw community. For community links, see [OpenClaw Discord](https://discord.gg/clawd) or [@openclaw on X](https://x.com/openclaw).

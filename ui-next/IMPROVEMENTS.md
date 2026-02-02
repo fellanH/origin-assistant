@@ -47,7 +47,7 @@
 
 | Task | Status | Description |
 |------|--------|-------------|
-| **Rebrand to Cortana** | ✅ Done | Package names, comments, docs updated. Internal hook names (`useOpenClawChat`) retained for compatibility. |
+| **Rebrand to Origin** | ✅ Done | Package names, comments, docs updated. Internal hook names (`useOpenClawChat`) retained for compatibility. |
 
 ### 🐛 Known Bugs
 

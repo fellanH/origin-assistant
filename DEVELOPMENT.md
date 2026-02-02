@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide explains how to customize Cortana for your personal use.
+This guide explains how to customize Origin for your personal use.
 
 ## Quick Reference
 
@@ -16,7 +16,7 @@ pnpm gateway:dev            # Run gateway (skip channels for speed)
 pnpm gateway:watch          # Run with file watching
 
 # Your fork
-cortana --help              # Run your built fork (after quickstart)
+origin --help              # Run your built fork (after quickstart)
 ```
 
 ---

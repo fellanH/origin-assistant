@@ -106,7 +106,7 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
   // Routing + queue
   routing: {
     groupChat: {
-      mentionPatterns: ["@cortana", "cortana"],
+      mentionPatterns: ["@origin", "origin"],
       historyLimit: 50,
     },
     queue: {

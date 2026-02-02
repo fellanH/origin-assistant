@@ -1,13 +1,13 @@
 ---
-summary: "Top-level overview of Cortana, features, and purpose"
+summary: "Top-level overview of Origin, features, and purpose"
 read_when:
-  - Introducing Cortana to newcomers
-title: "Cortana"
+  - Introducing Origin to newcomers
+title: "Origin"
 ---
 
-# Cortana
+# Origin
 
-> **This doc set is for Cortana** — a neutral, de-branded fork of OpenClaw for non-technical users. Upstream docs: [docs.openclaw.ai](https://docs.openclaw.ai).
+> **This doc set is for Origin** — a neutral, de-branded fork of OpenClaw for non-technical users. Upstream docs: [docs.openclaw.ai](https://docs.openclaw.ai).
 
 <p align="center">
   <strong>Any OS + WhatsApp/Telegram/Discord/iMessage gateway for AI agents (Pi).</strong><br />
@@ -18,19 +18,19 @@ title: "Cortana"
 <p align="center">
   <a href="https://github.com/openclaw/openclaw">Upstream</a> ·
   <a href="/">Docs</a> ·
-  <a href="/start/cortana">Cortana setup</a>
+  <a href="/start/origin">Origin setup</a>
 </p>
 
-Cortana bridges WhatsApp (via WhatsApp Web / Baileys), Telegram (Bot API / grammY), Discord (Bot API / channels.discord.js), and iMessage (imsg CLI) to coding agents like [Pi](https://github.com/badlogic/pi-mono). Plugins add Mattermost (Bot API + WebSocket) and more.
+Origin bridges WhatsApp (via WhatsApp Web / Baileys), Telegram (Bot API / grammY), Discord (Bot API / channels.discord.js), and iMessage (imsg CLI) to coding agents like [Pi](https://github.com/badlogic/pi-mono). Plugins add Mattermost (Bot API + WebSocket) and more.
 
 ## Start here
 
 - **New install from zero:** [Getting Started](/start/getting-started)
-- **Guided setup (recommended):** [Wizard](/start/wizard) (`cortana onboard`)
+- **Guided setup (recommended):** [Wizard](/start/wizard) (`origin onboard`)
 - **Open the dashboard (local Gateway):** http://127.0.0.1:18789/ (or http://localhost:18789/)
 
 If the Gateway is running on the same computer, that link opens the browser Control UI
-immediately. If it fails, start the Gateway first: `cortana gateway`.
+immediately. If it fails, start the Gateway first: `origin gateway`.
 
 ## Dashboard (browser Control UI)
 
@@ -52,21 +52,21 @@ WhatsApp / Telegram / Discord / iMessage (+ plugins)
   └───────────┬───────────────┘
               │
               ├─ Pi agent (RPC)
-              ├─ CLI (cortana …)
+              ├─ CLI (origin …)
               ├─ Chat UI (SwiftUI)
               ├─ macOS app
               ├─ iOS node via Gateway WS + pairing
               └─ Android node via Gateway WS + pairing
 ```
 
-Most operations flow through the **Gateway** (`cortana gateway`), a single long-running process that owns channel connections and the WebSocket control plane.
+Most operations flow through the **Gateway** (`origin gateway`), a single long-running process that owns channel connections and the WebSocket control plane.
 
 ## Network model
 
 - **One Gateway per host (recommended)**: it is the only process allowed to own the WhatsApp Web session. If you need a rescue bot or strict isolation, run multiple gateways with isolated profiles and ports; see [Multiple gateways](/gateway/multiple-gateways).
 - **Loopback-first**: Gateway WS defaults to `ws://127.0.0.1:18789`.
   - The wizard now generates a gateway token by default (even for loopback).
-  - For Tailnet access, run `cortana gateway --bind tailnet --token ...` (token is required for non-loopback binds).
+  - For Tailnet access, run `origin gateway --bind tailnet --token ...` (token is required for non-loopback binds).
 - **Nodes**: connect to the Gateway WebSocket (LAN/tailnet/SSH as needed); legacy TCP bridge is deprecated/removed.
 - **Canvas host**: HTTP file server on `canvasHost.port` (default `18793`), serving `/__openclaw__/canvas/` for node WebViews; see [Gateway configuration](/gateway/configuration) (`canvasHost`).
 - **Remote use**: SSH tunnel or tailnet/VPN; see [Remote access](/gateway/remote) and [Discovery](/gateway/discovery).
@@ -99,51 +99,51 @@ Runtime requirement: **Node >= 22**.
 ```bash
 # From source (this fork)
 git clone <your-fork-url>
-cd cortana
+cd origin
 ./scripts/quickstart.sh
 
-# After setup, use the cortana alias
-cortana onboard --install-daemon
+# After setup, use the origin alias
+origin onboard --install-daemon
 
 # Pair WhatsApp Web (shows QR)
-cortana channels login
+origin channels login
 
 # Gateway runs via the service after onboarding; manual run is still possible:
-cortana gateway --port 18789
+origin gateway --port 18789
 ```
 
 From source (development):
 
 ```bash
 git clone <your-fork-url>
-cd cortana
+cd origin
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
 pnpm build
-cortana onboard --install-daemon
+origin onboard --install-daemon
 ```
 
-If you don't have the `cortana` alias yet, run the onboarding step via `pnpm openclaw ...` from the repo.
+If you don't have the `origin` alias yet, run the onboarding step via `pnpm openclaw ...` from the repo.
 
 Multi-instance quickstart (optional):
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
 OPENCLAW_STATE_DIR=~/.openclaw-a \
-cortana gateway --port 19001
+origin gateway --port 19001
 ```
 
 Send a test message (requires a running Gateway):
 
 ```bash
-cortana message send --target +15555550123 --message "Hello from Cortana"
+origin message send --target +15555550123 --message "Hello from Origin"
 ```
 
 ## Configuration (optional)
 
 Config lives at `~/.openclaw/openclaw.json`.
 
-- If you **do nothing**, Cortana uses the bundled Pi binary in RPC mode with per-sender sessions.
+- If you **do nothing**, Origin uses the bundled Pi binary in RPC mode with per-sender sessions.
 - If you want to lock it down, start with `channels.whatsapp.allowFrom` and (for groups) mention rules.
 
 Example:
@@ -156,7 +156,7 @@ Example:
       groups: { "*": { requireMention: true } },
     },
   },
-  messages: { groupChat: { mentionPatterns: ["@cortana"] } },
+  messages: { groupChat: { mentionPatterns: ["@origin"] } },
 }
 ```
 
@@ -172,7 +172,7 @@ Example:
   - [Updating / rollback](/install/updating)
   - [Pairing (DM + nodes)](/start/pairing)
   - [Nix mode](/install/nix)
-  - [Cortana setup](/start/cortana)
+  - [Origin setup](/start/origin)
   - [Skills](/tools/skills)
   - [Skills config](/tools/skills-config)
   - [Workspace templates](/reference/templates/AGENTS)

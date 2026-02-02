@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LoaderIcon, MicIcon, SquareIcon } from "lucide-react";
+import { MicIcon, SquareIcon } from "lucide-react";
+import { Loader } from "@/components/ai-elements/loader";
 import {
   type ComponentProps,
   useCallback,
@@ -291,7 +292,7 @@ export const SpeechInput = ({
         onClick={toggleListening}
         {...props}
       >
-        {isProcessing && <LoaderIcon className="size-4 animate-spin" />}
+        {isProcessing && <Loader size={16} />}
         {!isProcessing && isListening && <SquareIcon className="size-4" />}
         {!(isProcessing || isListening) && <MicIcon className="size-4" />}
       </Button>

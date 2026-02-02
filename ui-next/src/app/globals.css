@@ -123,3 +123,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Input send pulse animation */
+@keyframes send-pulse {
+  0% {
+    box-shadow: 0 0 0 0 oklch(0.488 0.243 264.376 / 40%);
+  }
+  70% {
+    box-shadow: 0 0 0 8px oklch(0.488 0.243 264.376 / 0%);
+  }
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.488 0.243 264.376 / 0%);
+  }
+}
+
+.animate-send-pulse {
+  animation: send-pulse 0.4s ease-out;
+}
+
+/* Disconnection indicator pulse */
+@keyframes connection-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-connection-pulse {
+  animation: connection-pulse 2s ease-in-out infinite;
+}

@@ -1,4 +1,4 @@
-# Bugs & Polish — Cortana UI
+# Bugs & Polish — Origin UI
 
 > Tracking issues for final cleanup. Most things work well — these are edge cases and polish items.
 
@@ -48,6 +48,53 @@ Traced the complete data flow from gateway to rendering:
 1. Monitor browser console in development for warnings
 2. If warnings appear, they'll reveal the exact malformed data
 3. Consider adding error boundaries around message rendering
+
+---
+
+## 🎯 Session Model Improvements (Priority for Demo)
+
+### Goal: All Chats Are Equal (Option B)
+
+Remove the special "Main Chat" concept. All sessions are equal, named by content.
+
+### 1. Auto-naming Sessions
+
+**Problem:** Sessions are named "Chat" or generic IDs
+
+**Solution:** 
+- After first few messages, spawn a lightweight agent (Haiku) to generate a title
+- Or use simple heuristic: first user message truncated to ~30 chars
+
+**Implementation:**
+- Hook into `useOpenClawChat` after message count reaches 2-3
+- Call naming function (local heuristic or API)
+- Update session label in storage
+
+### 2. Clear/Reset Session
+
+**Problem:** No way to clear a session's history and start fresh
+
+**Solution:**
+- Add "Clear" button to session actions
+- Clears messages but keeps the session
+- Or: Delete session + create new one with same key
+
+### 3. Subagent Nesting Under Actual Parent
+
+**Problem:** Subagents currently default to nesting under `agent:main:main`
+
+**Status:** ✅ FIXED — `parentSessionKey` tracking added
+
+**Verify:** When spawning subagent from a non-main session, it should nest under that session.
+
+### 4. Remove "Main Chat" Special Status
+
+**Problem:** `agent:main:main` is treated as special/permanent
+
+**Solution:**
+- Allow deletion of any session
+- First session created becomes "default" but not special
+- Update `parseSessionKey` to not give `main` special treatment in display
 
 ---
 

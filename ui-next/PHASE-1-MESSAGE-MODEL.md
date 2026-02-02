@@ -373,7 +373,7 @@ After implementing Phase 1:
 
 3. **Console Test**: Check localStorage for a session
    ```javascript
-   JSON.parse(localStorage.getItem('cortana.messages.<sessionKey>'))
+   JSON.parse(localStorage.getItem('origin.messages.<sessionKey>'))
    ```
    - Verify `parts` arrays are present on messages with structured content
 

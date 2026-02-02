@@ -33,7 +33,7 @@
 ┌────────────────────────────────────────────────────────────────────┐
 │ [Sidebar]                    │                                      │
 │ ┌──────────────────────────┐ │                                      │
-│ │ 🤖 Cortana     ⚙️ 🌙     │ │                                      │
+│ │ 🤖 Origin     ⚙️ 🌙     │ │                                      │
 │ │ ● Connected              │ │       💬 Chat Messages               │
 │ └──────────────────────────┘ │       (Full Height)                  │
 │                              │                                      │
@@ -103,7 +103,7 @@ export function SidebarHeader({ connected, onSettingsClick }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <SparklesIcon className="w-5 h-5" />
-          <span className="font-semibold">Cortana</span>
+          <span className="font-semibold">Origin</span>
           <span className={cn(
             "w-2 h-2 rounded-full",
             connected ? "bg-green-500" : "bg-red-500"
@@ -233,7 +233,7 @@ Keep header at top, just move input.
 ### Expanded Sidebar (280px)
 ```
 ┌─────────────────────┬────────────────────┐
-│ 🤖 Cortana    ⚙️ 🌙 │                    │
+│ 🤖 Origin    ⚙️ 🌙 │                    │
 │ ● Connected         │                    │
 │─────────────────────│                    │
 │ ▼ 💬 Main Session   │   Chat Messages    │

@@ -48,7 +48,7 @@ For debugging “why is this blocked?”, see [Sandbox vs Tool Policy vs Elevate
       {
         "id": "main",
         "default": true,
-        "name": "Cortana",
+        "name": "Origin",
         "workspace": "~/.openclaw/workspace",
         "sandbox": { "mode": "off" }
       },

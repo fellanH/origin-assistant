@@ -1,10 +1,10 @@
-# Cortana UI
+# Origin UI
 
-Modern chat interface for Cortana, built with Next.js 16.
+Modern chat interface for Origin, built with Next.js 16.
 
 ## Overview
 
-This is the primary UI for interacting with Cortana. It connects to the OpenClaw Gateway via WebSocket for real-time chat, tool execution display, and session management.
+This is the primary UI for interacting with Origin. It connects to the OpenClaw Gateway via WebSocket for real-time chat, tool execution display, and session management.
 
 ## Getting Started
 

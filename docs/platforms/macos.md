@@ -1,14 +1,14 @@
 ---
-summary: "Cortana macOS companion app (menu bar + gateway broker)"
+summary: "Origin macOS companion app (menu bar + gateway broker)"
 read_when:
   - Implementing macOS app features
   - Changing gateway lifecycle or node bridging on macOS
 title: "macOS App"
 ---
 
-# Cortana macOS Companion (menu bar + gateway broker)
+# Origin macOS Companion (menu bar + gateway broker)
 
-The macOS app is the **menu-bar companion** for Cortana. It owns permissions,
+The macOS app is the **menu-bar companion** for Origin. It owns permissions,
 manages/attaches to the Gateway locally (launchd or manual), and exposes macOS
 capabilities to the agent as a node.
 
@@ -21,12 +21,12 @@ capabilities to the agent as a node.
 - Exposes macOS-only tools (Canvas, Camera, Screen Recording, `system.run`).
 - Starts the local node host service in **remote** mode (launchd), and stops it in **local** mode.
 - Optionally hosts **PeekabooBridge** for UI automation.
-- Installs the global CLI (`cortana` alias) on request (bun not recommended for the Gateway runtime).
+- Installs the global CLI (`origin` alias) on request (bun not recommended for the Gateway runtime).
 
 ## Local vs remote mode
 
 - **Local** (default): the app attaches to a running local Gateway if present;
-  otherwise it enables the launchd service via `cortana gateway install`.
+  otherwise it enables the launchd service via `origin gateway install`.
 - **Remote**: the app connects to a Gateway over SSH/Tailscale and never starts
   a local process.
   The app starts the local **node host service** so the remote Gateway can reach this Mac.
@@ -45,7 +45,7 @@ launchctl bootout gui/$UID/bot.molt.gateway
 Replace the label with `bot.molt.<profile>` when running a named profile.
 
 If the LaunchAgent isn't installed, enable it from the app or run
-`cortana gateway install`.
+`origin gateway install`.
 
 **From source:** If running a local fork, install the service from within the repo:
 `node dist/entry-bootstrap.js gateway install`. This points the LaunchAgent to
@@ -174,7 +174,7 @@ Discovery options:
 - `--timeout <ms>`: overall discovery window (default: `2000`)
 - `--json`: structured output for diffing
 
-Tip: compare against `cortana gateway discover --json` to see whether the
+Tip: compare against `origin gateway discover --json` to see whether the
 macOS app's discovery pipeline (NWBrowser + tailnet DNS-SD fallback) differs from
 the Node CLI's `dns-sd` based discovery.
 

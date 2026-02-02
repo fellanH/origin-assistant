@@ -22,8 +22,8 @@ defaults:
 nav:
   - title: "Home"
     url: "/"
-  - title: "Cortana Setup"
-    url: "/start/cortana/"
+  - title: "Origin Setup"
+    url: "/start/origin/"
   - title: "Gateway"
     url: "/gateway/"
   - title: "Remote"

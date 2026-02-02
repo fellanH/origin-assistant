@@ -1,15 +1,15 @@
 ---
-summary: "Default Cortana agent instructions and skills roster for the personal assistant setup"
+summary: "Default Origin agent instructions and skills roster for the personal assistant setup"
 read_when:
-  - Starting a new Cortana agent session
+  - Starting a new Origin agent session
   - Enabling or auditing default skills
 ---
 
-# AGENTS.md — Cortana (default)
+# AGENTS.md — Origin (default)
 
 ## First run (recommended)
 
-Cortana uses a dedicated workspace directory for the agent. Default: `~/.openclaw/workspace` (configurable via `agents.defaults.workspace`).
+Origin uses a dedicated workspace directory for the agent. Default: `~/.openclaw/workspace` (configurable via `agents.defaults.workspace`).
 
 1. Create the workspace (if it doesn't already exist):
 
@@ -86,10 +86,10 @@ git commit -m "Add workspace"
 # Optional: add a private remote + push
 ```
 
-## What Cortana Does
+## What Origin Does
 
 - Runs WhatsApp gateway + Pi coding agent so the assistant can read/write chats, fetch context, and run skills via the host Mac.
-- macOS app manages permissions (screen recording, notifications, microphone) and exposes the `cortana` CLI via its bundled binary.
+- macOS app manages permissions (screen recording, notifications, microphone) and exposes the `origin` CLI via its bundled binary.
 - Direct chats collapse into the agent's `main` session by default; groups stay isolated as `agent:<agentId>:<channel>:group:<id>` (rooms/channels: `agent:<agentId>:<channel>:channel:<id>`); heartbeats keep background tasks alive.
 
 ## Core Skills (enable in Settings > Skills)
@@ -115,10 +115,10 @@ git commit -m "Add workspace"
 
 ## Usage Notes
 
-- Prefer the `cortana` CLI for scripting; mac app handles permissions.
+- Prefer the `origin` CLI for scripting; mac app handles permissions.
 - Run installs from the Skills tab; it hides the button if a binary is already present.
 - Keep heartbeats enabled so the assistant can schedule reminders, monitor inboxes, and trigger camera captures.
 - Canvas UI runs full-screen with native overlays. Avoid placing critical controls in the top-left/top-right/bottom edges; add explicit gutters in the layout and don't rely on safe-area insets.
-- For browser-driven verification, use `cortana browser` (tabs/status/screenshot) with the Cortana-managed Chrome profile.
-- For DOM inspection, use `cortana browser eval|query|dom|snapshot` (and `--json`/`--out` when you need machine output).
-- For interactions, use `cortana browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type require snapshot refs; use `evaluate` for CSS selectors).
+- For browser-driven verification, use `origin browser` (tabs/status/screenshot) with the Origin-managed Chrome profile.
+- For DOM inspection, use `origin browser eval|query|dom|snapshot` (and `--json`/`--out` when you need machine output).
+- For interactions, use `origin browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type require snapshot refs; use `evaluate` for CSS selectors).

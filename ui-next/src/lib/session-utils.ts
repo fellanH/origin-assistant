@@ -8,7 +8,7 @@
 
 export type ParsedSessionKey = {
   agentId: string;
-  type: "main" | "subagent" | "channel" | "cron" | "hook" | "chat" | "other";
+  type: "subagent" | "channel" | "cron" | "hook" | "chat" | "other";
   channelType?: string;  // telegram, discord, etc.
   chatType?: string;     // group, channel, dm
   identifier: string;    // uuid, group id, etc.
@@ -51,20 +51,11 @@ export type SessionTreeNode = {
 export function parseSessionKey(key: string): ParsedSessionKey {
   const parts = key.split(":");
   
-  // agent:main:main - the primary main session
-  if (parts[0] === "agent" && parts.length === 3 && parts[2] === "main") {
-    return {
-      agentId: parts[1],
-      type: "main",
-      identifier: "main",
-    };
-  }
-  
-  // agent:main:<shortId> - regular chat sessions (not subagent, not channel pattern)
+  // agent:main:<id> - all chat sessions (including "main" which is just another session)
   // These are individual chat sessions created via "New Session"
-  if (parts[0] === "agent" && parts.length === 3 && parts[2] !== "main") {
-    // Check if it looks like a short session ID (alphanumeric, typically 8 chars)
+  if (parts[0] === "agent" && parts.length === 3 && parts[2] !== "subagent") {
     const identifier = parts[2];
+    // Check if it looks like a session ID (alphanumeric, or "main")
     if (/^[a-z0-9]+$/i.test(identifier) && identifier.length <= 16) {
       return {
         agentId: parts[1],
@@ -135,7 +126,6 @@ export function parseSessionKey(key: string): ParsedSessionKey {
 
 export function getSessionIcon(parsed: ParsedSessionKey): string {
   switch (parsed.type) {
-    case "main": return "💬";
     case "chat": return "💬";
     case "subagent": return "⚡";
     case "channel": {
@@ -185,16 +175,13 @@ export function getSessionDisplayName(
   if (session.label) return session.label;
   
   switch (parsed.type) {
-    case "main":
-      return "Main Chat";
-      
     case "chat": {
       // For chat sessions, prefer preview (first message) if available
       if (session.preview) {
         const cleaned = cleanPreview(session.preview);
         if (cleaned) return truncate(cleaned, 32);
       }
-      // Fallback to a friendly name with the session ID
+      // Fallback to a friendly name
       return "Chat";
     }
     
