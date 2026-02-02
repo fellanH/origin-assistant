@@ -111,6 +111,32 @@ const {
 
 **Output:** `tasks/task-3.md`
 
+### Task 4: Implement Inline Streaming Message Model (2026-02-02)
+
+Fixed the "double bubble" streaming issue by making streaming content render inline in the message list instead of as a separate element.
+
+**Problem:** During streaming, there was a separate DOM element for streaming content. When `final` arrived, that element disappeared AND a new message was added, causing a visual "jump".
+
+**Solution:**
+- Added `streamingMessageId: string | null` to `SessionData` interface
+- On first delta: create a placeholder message in the messages array with a streaming ID
+- On subsequent deltas: update the existing message in-place
+- On final: update the existing streaming message to final state (no add/remove operation)
+- On abort: update existing message with "[Aborted]" suffix
+- On error: remove the streaming message (don't persist partial content)
+
+**Changes to `src/lib/session-store.ts`:**
+- Added `streamingMessageId` field to `SessionData` interface
+- Updated `createEmptySession` to initialize `streamingMessageId: null`
+- Updated `processChatEvent` delta case to create/update inline message
+- Updated `processChatEvent` final case to update existing message instead of adding new
+- Updated `processChatEvent` aborted case to update existing message
+- Updated `processChatEvent` error case to remove streaming message and clear state
+
+**Result:** No DOM operations during streaming→final transition. The same message element is updated in place, eliminating visual jumps.
+
+**Output:** `tasks/task-4.md`
+
 ## In Progress
 
 *None*

@@ -83,6 +83,7 @@ export interface SessionData {
   messages: ChatMessage[];
   status: ChatStatus;
   streamingContent: string;
+  streamingMessageId: string | null; // ID of message being streamed (for inline streaming)
   currentRunId: string | null;
   error: string | null;
   historyLoaded: boolean;
@@ -93,21 +94,32 @@ export interface SessionData {
   eventQueue: GatewayEventFrame[]; // Buffer for race condition fix
   persistedSubagentIds: Set<string>;
   lastAccess: number; // For LRU eviction
-  
+
   // Scroll state for session switching
   isAtBottom: boolean; // Was user at bottom when leaving this session?
   scrollOffset: number | null; // Scroll position if not at bottom
 }
 
 /**
- * Create empty session data
+ * Cache for empty sessions to ensure stable references in selectors.
+ * Without this cache, createEmptySession would return a new object every render,
+ * causing infinite loops in useSyncExternalStore/Zustand selectors.
+ */
+const emptySessionCache = new Map<string, SessionData>();
+
+/**
+ * Create empty session data (cached by key for stable references)
  */
 function createEmptySession(key: string): SessionData {
-  return {
+  const cached = emptySessionCache.get(key);
+  if (cached) return cached;
+
+  const session: SessionData = {
     key,
     messages: [],
     status: "idle",
     streamingContent: "",
+    streamingMessageId: null,
     currentRunId: null,
     error: null,
     historyLoaded: false,
@@ -121,6 +133,8 @@ function createEmptySession(key: string): SessionData {
     isAtBottom: true, // New sessions start at bottom
     scrollOffset: null,
   };
+  emptySessionCache.set(key, session);
+  return session;
 }
 
 // =============================================================================
@@ -348,6 +362,8 @@ export const useSessionStore = create<SessionStore>()(
       let session = sessions.get(key);
       if (!session) {
         session = createEmptySession(key);
+        // Clear from empty cache since it's now in the real store
+        emptySessionCache.delete(key);
         set({ sessions: new Map(sessions).set(key, session) });
       }
       return session;
@@ -479,10 +495,40 @@ export const useSessionStore = create<SessionStore>()(
       switch (payload.state) {
         case "delta": {
           const deltaText = extractText(payload.message);
-          updateSession(key, () => ({
-            status: "streaming",
-            streamingContent: deltaText || undefined,
-          }));
+          const currentSession = get().sessions.get(key);
+
+          if (!currentSession?.streamingMessageId) {
+            // First delta — create placeholder message in the messages array
+            const streamingId = `streaming-${Date.now()}`;
+            const placeholderMsg: ChatMessage = {
+              id: streamingId,
+              role: "assistant",
+              content: deltaText || "",
+              timestamp: Date.now(),
+            };
+            updateSession(key, (s) => ({
+              messages: [...s.messages, placeholderMsg],
+              streamingMessageId: streamingId,
+              status: "streaming",
+              streamingContent: deltaText || "",
+            }));
+          } else {
+            // Subsequent deltas — update existing message in-place
+            updateSession(key, (s) => {
+              const newMessages = [...s.messages];
+              const idx = newMessages.findIndex((m) => m.id === s.streamingMessageId);
+              if (idx >= 0) {
+                newMessages[idx] = {
+                  ...newMessages[idx],
+                  content: deltaText || "",
+                };
+              }
+              return {
+                messages: newMessages,
+                streamingContent: deltaText || "",
+              };
+            });
+          }
           break;
         }
         
@@ -490,32 +536,52 @@ export const useSessionStore = create<SessionStore>()(
           const currentSession = get().sessions.get(key);
           const finalText = currentSession?.streamingContent || extractText(payload.message);
           const finalParts = extractParts(payload.message);
-          
-          if (finalText || finalParts) {
-            const assistantMsg: ChatMessage = {
-              id: `assistant-${Date.now()}`,
-              role: "assistant",
-              content: finalText,
-              parts: finalParts,
-              timestamp: Date.now(),
-            };
-            
-            updateSession(key, (s) => ({
-              messages: [...s.messages, assistantMsg],
+          const finalId = `assistant-${Date.now()}`;
+
+          updateSession(key, (s) => {
+            const newMessages = [...s.messages];
+
+            if (s.streamingMessageId) {
+              // Update existing streaming message to final state (no add/remove)
+              const idx = newMessages.findIndex((m) => m.id === s.streamingMessageId);
+              if (idx >= 0) {
+                newMessages[idx] = {
+                  ...newMessages[idx],
+                  id: finalId, // New permanent ID
+                  content: finalText,
+                  parts: finalParts,
+                };
+              }
+            } else if (finalText || finalParts) {
+              // No streaming message (edge case) — add new
+              newMessages.push({
+                id: finalId,
+                role: "assistant",
+                content: finalText,
+                parts: finalParts,
+                timestamp: Date.now(),
+              });
+            }
+
+            return {
+              messages: newMessages,
               streamingContent: "",
+              streamingMessageId: null,
               status: "idle",
               currentRunId: null,
-            }));
-            
-            // Persist to localStorage
+            };
+          });
+
+          // Persist to localStorage (use final message)
+          if (finalText || finalParts) {
             addLocalMessage(key, {
-              id: assistantMsg.id,
-              role: assistantMsg.role,
-              content: assistantMsg.content,
+              id: finalId,
+              role: "assistant",
+              content: finalText,
               parts: finalParts?.map(toStoredPart),
-              timestamp: assistantMsg.timestamp!,
+              timestamp: Date.now(),
             });
-            
+
             // Auto-name session
             const currentSess = getLocalSessions().find((s) => s.key === key);
             if (currentSess && isGenericSessionLabel(currentSess.label)) {
@@ -525,7 +591,7 @@ export const useSessionStore = create<SessionStore>()(
                 updateSessionLabel(key, generateLabelFromContent(firstUser.content));
               }
             }
-            
+
             // Handle subagent completion
             const announceMatch = finalText.match(/sessionKey:\s*(agent:\w+:subagent:[\w-]+)/i);
             if (announceMatch) {
@@ -547,12 +613,6 @@ export const useSessionStore = create<SessionStore>()(
                 return { subagents: next };
               });
             }
-          } else {
-            updateSession(key, () => ({
-              streamingContent: "",
-              status: "idle",
-              currentRunId: null,
-            }));
           }
           break;
         }
@@ -561,47 +621,73 @@ export const useSessionStore = create<SessionStore>()(
           const currentSession = get().sessions.get(key);
           const abortedContent = currentSession?.streamingContent ?? "";
           const abortedParts = extractParts(payload.message);
-          
-          if (abortedContent || abortedParts) {
-            const abortedMsg: ChatMessage = {
-              id: `assistant-${Date.now()}`,
-              role: "assistant",
-              content: abortedContent ? abortedContent + "\n\n[Aborted]" : "[Aborted]",
-              parts: abortedParts,
-              timestamp: Date.now(),
+          const abortedId = `assistant-${Date.now()}`;
+          const finalContent = abortedContent ? abortedContent + "\n\n[Aborted]" : "[Aborted]";
+
+          updateSession(key, (s) => {
+            const newMessages = [...s.messages];
+
+            if (s.streamingMessageId) {
+              // Update existing streaming message with aborted content
+              const idx = newMessages.findIndex((m) => m.id === s.streamingMessageId);
+              if (idx >= 0) {
+                newMessages[idx] = {
+                  ...newMessages[idx],
+                  id: abortedId,
+                  content: finalContent,
+                  parts: abortedParts,
+                };
+              }
+            } else if (abortedContent || abortedParts) {
+              // No streaming message — add new
+              newMessages.push({
+                id: abortedId,
+                role: "assistant",
+                content: finalContent,
+                parts: abortedParts,
+                timestamp: Date.now(),
+              });
+            }
+
+            return {
+              messages: newMessages,
+              streamingContent: "",
+              streamingMessageId: null,
+              status: "idle",
+              currentRunId: null,
             };
-            
-            updateSession(key, (s) => ({
-              messages: [...s.messages, abortedMsg],
-              streamingContent: "",
-              status: "idle",
-              currentRunId: null,
-            }));
-            
+          });
+
+          // Persist aborted message
+          if (abortedContent || abortedParts) {
             addLocalMessage(key, {
-              id: abortedMsg.id,
-              role: abortedMsg.role,
-              content: abortedMsg.content,
+              id: abortedId,
+              role: "assistant",
+              content: finalContent,
               parts: abortedParts?.map(toStoredPart),
-              timestamp: abortedMsg.timestamp!,
+              timestamp: Date.now(),
             });
-          } else {
-            updateSession(key, () => ({
-              streamingContent: "",
-              status: "idle",
-              currentRunId: null,
-            }));
           }
           break;
         }
-        
+
         case "error": {
-          updateSession(key, () => ({
-            error: payload.errorMessage ?? "Unknown error",
-            streamingContent: "",
-            status: "error",
-            currentRunId: null,
-          }));
+          // Clear streaming state on error
+          updateSession(key, (s) => {
+            // If there was a streaming message, remove it (errors shouldn't persist partial content)
+            const newMessages = s.streamingMessageId
+              ? s.messages.filter((m) => m.id !== s.streamingMessageId)
+              : s.messages;
+
+            return {
+              messages: newMessages,
+              error: payload.errorMessage ?? "Unknown error",
+              streamingContent: "",
+              streamingMessageId: null,
+              status: "error",
+              currentRunId: null,
+            };
+          });
           break;
         }
       }
