@@ -9,6 +9,8 @@
 - ✅ 48 AI Elements components implemented
 - ✅ Session model fixed: all chats equal, auto-naming, clear session
 - ✅ Responsive sidebar (mobile/tablet)
+- ✅ ROADMAP.md created with vision and phased plan
+- 🔄 SubagentArtifact component — atomic tasks defined
 - Build passing
 
 **Backend** — Full access to OpenClaw source:
@@ -16,42 +18,52 @@
 - `src/agents/` — Orchestration, subagents, tools
 - `src/sessions/` — Session management
 
-## Recent Session (18:04)
+## Active Work: SubagentArtifact (Phase 1.1)
 
-Completed:
-- Removed "Main Chat" special status — all sessions equal
-- Auto-naming from first user message
-- Clear session action (eraser icon)
-- Any session can be deleted
+**Problem:** Subagents disappear after completion, no visibility into what they did.
 
-In progress discussion:
-- Message queueing (send while processing)
-- Activity status bar (show background state)
-- Better loading/feedback states
+**Solution:** New `SubagentArtifact` component using Agent/Artifact primitives.
+
+**Tasks file:** `ui-next/TASKS-SUBAGENT-ARTIFACT.md`
+
+| Task | Description | Status |
+|------|-------------|--------|
+| 1 | Base component with Agent/Artifact patterns | PENDING |
+| 2 | Task description section | PENDING |
+| 3 | Result summary section | PENDING |
+| 4 | Expandable history preview | PENDING |
+| 5 | Action buttons | PENDING |
+| 6 | message-parts.tsx integration | PENDING |
+| 7 | Persist in message parts | PENDING |
+| 8 | Remove old SubagentCard | PENDING |
 
 ## Pickup
 
-- [ ] Test session model changes
-- [ ] Add message queue UI
-- [ ] Add activity status bar
-- [ ] Demo to colleague tomorrow
+- [ ] Run sub-agents on Tasks 1-5 (can parallelize 2-5 after 1)
+- [ ] Then Tasks 6-7 sequentially
+- [ ] Task 8 last (cleanup)
+- [ ] Demo to colleague (TBD)
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
+| `ROADMAP.md` | Full project roadmap and vision |
+| `ui-next/TASKS-SUBAGENT-ARTIFACT.md` | Atomic tasks for current work |
 | `ui-next/IMPROVEMENTS.md` | Full status + backlog |
-| `ui-next/BUGS-AND-POLISH.md` | Active bugs + session model improvements |
-| `ui-next/src/app/page.tsx` | Main chat UI |
-| `ui-next/src/lib/use-gateway.ts` | Gateway hooks, auto-naming |
-| `ui-next/src/lib/storage.ts` | Session storage, clear/update |
+| `ui-next/BUGS-AND-POLISH.md` | Active bugs + polish items |
+| `ui-next/src/components/ai-elements/agent.tsx` | Agent component primitives |
+| `ui-next/src/components/ai-elements/artifact.tsx` | Artifact component primitives |
+| `ui-next/src/components/ai-elements/subagent-card.tsx` | Current impl (to replace) |
+| `ui-next/src/lib/use-gateway.ts` | SubagentState, tracking logic |
 
-## Backend Deep Dive (Future)
+## Related: Ralph-Loop
 
-Key files for agent orchestration:
-- `src/agents/lanes.ts` — Concurrency control
-- `src/agents/subagent-registry.ts` — Subagent lifecycle
-- `src/agents/pi-embedded-runner.ts` — Main agent loop
+Origin's subagent system is essentially a built-in ralph-loop. See:
+- `memory/autonomous-coding-philosophy.md` — The pattern
+- `/Users/admin/dev/software-ralph-loop/` — External implementation
+
+Vision: Origin becomes a **visual ralph-loop** with task queues, batch spawning, and orchestration UI.
 
 ---
-_Last updated: 2026-02-02 18:05_
+_Last updated: 2026-02-02 18:30_
