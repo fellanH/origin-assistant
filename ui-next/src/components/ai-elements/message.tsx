@@ -18,8 +18,25 @@ import { math } from "@streamdown/math";
 import { mermaid } from "@streamdown/mermaid";
 import type { UIMessage } from "ai";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
+import type { ComponentProps, HTMLAttributes, ReactElement, TdHTMLAttributes, ThHTMLAttributes } from "react";
 import { createContext, memo, useContext, useEffect, useState } from "react";
+
+// Filter out non-standard DOM attributes that React warns about
+function filterTableCellProps<T extends TdHTMLAttributes<HTMLTableCellElement> | ThHTMLAttributes<HTMLTableCellElement>>(
+  props: T
+): Omit<T, "vAlign" | "charOff" | "char"> {
+  const { vAlign, charOff, char, ...rest } = props as T & { vAlign?: string; charOff?: string; char?: string };
+  return rest as Omit<T, "vAlign" | "charOff" | "char">;
+}
+
+// Custom table cell components that filter problematic props
+const TableCell = (props: TdHTMLAttributes<HTMLTableCellElement>) => (
+  <td {...filterTableCellProps(props)} />
+);
+
+const TableHeaderCell = (props: ThHTMLAttributes<HTMLTableCellElement>) => (
+  <th {...filterTableCellProps(props)} />
+);
 import { Streamdown } from "streamdown";
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
@@ -312,6 +329,7 @@ export const MessageResponse = memo(
         className
       )}
       plugins={{ code, mermaid, math, cjk }}
+      components={{ td: TableCell, th: TableHeaderCell }}
       {...props}
     />
   ),

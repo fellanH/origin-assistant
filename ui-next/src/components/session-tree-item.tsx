@@ -198,8 +198,8 @@ export function SessionTreeItem({
           </span>
         )}
         
-        {/* Clear button - only for local sessions with messages */}
-        {session.isLocal && session.messageCount !== undefined && session.messageCount > 0 && (
+        {/* Clear button - only for sessions with messages */}
+        {session.messageCount !== undefined && session.messageCount > 0 && (
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -217,24 +217,22 @@ export function SessionTreeItem({
           </button>
         )}
         
-        {/* Delete button - only for local sessions */}
-        {session.isLocal && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(session.key);
-            }}
-            className={cn(
-              "p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all flex-shrink-0",
-              isActive
-                ? "hover:bg-primary-foreground/20 text-primary-foreground"
-                : "hover:bg-destructive/10 text-destructive/80 hover:text-destructive"
-            )}
-            title="Delete session"
-          >
-            <Trash2Icon className="w-3.5 h-3.5" />
-          </button>
-        )}
+        {/* Delete button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(session.key);
+          }}
+          className={cn(
+            "p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all flex-shrink-0",
+            isActive
+              ? "hover:bg-primary-foreground/20 text-primary-foreground"
+              : "hover:bg-destructive/10 text-destructive/80 hover:text-destructive"
+          )}
+          title="Delete session"
+        >
+          <Trash2Icon className="w-3.5 h-3.5" />
+        </button>
       </div>
       
       {/* Children (recursive) with subtle left border */}

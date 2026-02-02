@@ -1,0 +1,18 @@
+Task 3 is complete. Here's what I did:
+
+## Summary
+
+Created the `useSessionData` hook in `src/lib/use-session.ts` that replaces 8+ individual `useSessionField` calls with a single optimized Zustand subscription using shallow comparison.
+
+**Key implementation details:**
+- Added `useShallow` from `zustand/react/shallow` for shallow comparison
+- Created `SessionDataResult` interface with all session fields
+- Implemented a cache for empty session defaults (`emptySessionCache`) to prevent infinite re-render loops (following the CLAUDE.md guidance about Zustand selectors)
+- Hook returns: messages, status, streamingContent, error, historyLoading, historyLoaded, toolExecutions, subagents, messageQueue
+
+**Files changed:**
+- `src/lib/use-session.ts` - Added the new hook (+66 lines)
+- `tasks/task-3.md` - Marked as COMPLETE
+- `tasks/HANDOFF.md` - Added task summary
+
+**Commit:** `c5589b110` - feat(ui): add optimized useSessionData hook with shallow comparison

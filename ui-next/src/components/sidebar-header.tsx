@@ -13,7 +13,6 @@ import {
 import { cn } from "@/lib/utils";
 import { SettingsIcon } from "lucide-react";
 import { OriginLogo } from "./origin-logo";
-import { ThemeToggle } from "./theme-toggle";
 
 type SidebarHeaderProps = {
 	connected: boolean;
@@ -110,7 +109,6 @@ export function SidebarHeader({
 							</ContextContent>
 						</Context>
 					)}
-					<ThemeToggle />
 					<button
 						onClick={onSettingsClick}
 						className={cn(

@@ -1,0 +1,29 @@
+Task 2 is complete. Here's a summary:
+
+## Task 2 Complete: Remove Deprecated use-gateway Exports
+
+### What was done:
+1. **Updated imports** in 3 consumer files to import types from `@/lib/use-session` instead of `@/lib/use-gateway`:
+   - `src/components/ai-elements/message-parts.tsx`
+   - `src/components/ai-elements/subagent-artifact.tsx`
+   - `src/components/activity-bar.tsx`
+
+2. **Added `MessagePart`** to the re-exports in `use-session.ts`
+
+3. **Removed from `use-gateway.ts`:**
+   - `useOpenClawChat` hook (~800 lines)
+   - 5 duplicated types (`MessagePart`, `ChatMessage`, `ToolExecutionState`, `SubagentState`, `ChatStatus`)
+   - 4 internal helper functions (`normalizeRole`, `toStoredPart`, `parseHistoryMessage`, `extractParts`)
+
+4. **Kept in `use-gateway.ts`:**
+   - `useGateway` — Core WebSocket connection hook
+   - `useSessionStats` — Token usage tracking hook
+   - `MODEL_CONTEXT_LIMITS` and `getModelContextLimit` (internal, used by `useSessionStats`)
+
+### Results:
+- **File size:** 1335 → 217 lines (84% reduction, 1118 lines removed)
+- **Build:** Passes ✓
+- **No broken imports** — All consumers updated
+
+### Commit:
+`c660e8aab` - refactor(ui): remove deprecated useOpenClawChat from use-gateway.ts

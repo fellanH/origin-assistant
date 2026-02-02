@@ -3,6 +3,42 @@
  * Falls back to OpenClaw control UI settings for token sharing (legacy compatibility)
  */
 
+// ============================================================================
+// Session Update Events
+// ============================================================================
+
+type SessionUpdateListener = () => void;
+const sessionUpdateListeners = new Set<SessionUpdateListener>();
+
+/**
+ * Subscribe to session updates (label changes, new sessions, etc.)
+ * Returns an unsubscribe function.
+ */
+export function onSessionUpdate(listener: SessionUpdateListener): () => void {
+	sessionUpdateListeners.add(listener);
+	return () => {
+		sessionUpdateListeners.delete(listener);
+	};
+}
+
+/**
+ * Notify all listeners that sessions have been updated.
+ */
+function notifySessionUpdate(): void {
+	console.log("[storage] notifySessionUpdate called, listeners:", sessionUpdateListeners.size);
+	for (const listener of sessionUpdateListeners) {
+		try {
+			listener();
+		} catch (err) {
+			console.error("[storage] Session update listener error:", err);
+		}
+	}
+}
+
+// ============================================================================
+// Settings Storage
+// ============================================================================
+
 const OPENCLAW_LEGACY_KEY = "openclaw.control.settings.v1";
 const ORIGIN_KEY = "origin.settings.v1";
 
@@ -112,6 +148,7 @@ export function clearSettings(): void {
 
 const SESSIONS_KEY = "origin.sessions.v1";
 const MESSAGES_PREFIX = "origin.messages.";
+const HIDDEN_SESSIONS_KEY = "origin.hidden-sessions.v1";
 
 export type StoredMessagePart =
 	| { type: "text"; text: string }
@@ -190,7 +227,8 @@ export function saveLocalSession(session: StoredSession): void {
 }
 
 /**
- * Delete a session and its messages from local storage
+ * Delete a session and its messages from local storage.
+ * Also hides the session from gateway results.
  */
 export function deleteLocalSession(sessionKey: string): void {
 	if (typeof window === "undefined") return;
@@ -200,9 +238,62 @@ export function deleteLocalSession(sessionKey: string): void {
 		localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
 		// Remove messages
 		localStorage.removeItem(MESSAGES_PREFIX + sessionKey);
+		// Also hide from gateway results
+		hideSession(sessionKey);
 	} catch {
 		// Ignore storage errors
 	}
+}
+
+/**
+ * Get the set of hidden session keys (sessions deleted locally but may exist on gateway)
+ */
+export function getHiddenSessions(): Set<string> {
+	if (typeof window === "undefined") return new Set();
+	try {
+		const raw = localStorage.getItem(HIDDEN_SESSIONS_KEY);
+		if (!raw) return new Set();
+		return new Set(JSON.parse(raw) as string[]);
+	} catch {
+		return new Set();
+	}
+}
+
+/**
+ * Hide a session (used when deleting gateway-only sessions)
+ */
+export function hideSession(sessionKey: string): void {
+	if (typeof window === "undefined") return;
+	try {
+		const hidden = getHiddenSessions();
+		hidden.add(sessionKey);
+		localStorage.setItem(HIDDEN_SESSIONS_KEY, JSON.stringify([...hidden]));
+	} catch {
+		// Ignore storage errors
+	}
+}
+
+/**
+ * Unhide a session (used when user creates/interacts with a hidden session)
+ */
+export function unhideSession(sessionKey: string): void {
+	if (typeof window === "undefined") return;
+	try {
+		const hidden = getHiddenSessions();
+		if (hidden.delete(sessionKey)) {
+			localStorage.setItem(HIDDEN_SESSIONS_KEY, JSON.stringify([...hidden]));
+		}
+	} catch {
+		// Ignore storage errors
+	}
+}
+
+/**
+ * Clear all hidden sessions (useful for debugging)
+ */
+export function clearHiddenSessions(): void {
+	if (typeof window === "undefined") return;
+	localStorage.removeItem(HIDDEN_SESSIONS_KEY);
 }
 
 /**
@@ -352,6 +443,7 @@ function generateSessionLabel(
  */
 export function isGenericSessionLabel(label: string): boolean {
 	return (
+		label === "Chat" ||
 		label === "New Chat" ||
 		label === "Main Session" ||
 		label.startsWith("Session ")
@@ -365,13 +457,17 @@ export function updateSessionLabel(
 	sessionKey: string,
 	label: string,
 ): boolean {
-	if (typeof window === "undefined") return false;
+	if (typeof window === "undefined") {
+		return false;
+	}
 	try {
 		const sessions = getLocalSessions();
 		const session = sessions.find((s) => s.key === sessionKey);
 		if (session) {
 			session.label = label;
 			saveLocalSession(session);
+			// Notify listeners (e.g., sidebar) to refresh
+			notifySessionUpdate();
 			return true;
 		}
 		return false;

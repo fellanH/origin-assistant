@@ -27,6 +27,7 @@ export interface SessionDataResult {
   messages: ChatMessage[];
   status: ChatStatus;
   streamingContent: string;
+  streamingMessageId: string | null; // ID of message being streamed (for inline streaming)
   error: string | null;
   historyLoading: boolean;
   historyLoaded: boolean;
@@ -46,6 +47,7 @@ function getEmptySessionData(sessionKey: string): SessionDataResult {
     messages: [],
     status: "idle" as ChatStatus,
     streamingContent: "",
+    streamingMessageId: null,
     error: null,
     historyLoading: false,
     historyLoaded: false,
@@ -74,6 +76,7 @@ export function useSessionData(sessionKey: string): SessionDataResult {
         messages: session.messages,
         status: session.status,
         streamingContent: session.streamingContent,
+        streamingMessageId: session.streamingMessageId,
         error: session.error,
         historyLoading: session.historyLoading,
         historyLoaded: session.historyLoaded,

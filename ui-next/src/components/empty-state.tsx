@@ -59,7 +59,7 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
 	const greeting = getGreeting();
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full text-center px-4 animate-in fade-in duration-500">
+		<div className="flex flex-col items-center justify-center h-full text-center px-4 pt-24 animate-in fade-in duration-500">
 			{/* Logo */}
 			<div className="relative mb-8">
 				<OriginLogo size={96} state="idle" className="md:scale-110" />

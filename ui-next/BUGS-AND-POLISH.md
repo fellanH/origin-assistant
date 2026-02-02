@@ -140,3 +140,10 @@ When investigating message issues:
 ---
 
 _Last updated: 2026-02-02 13:25_
+## Bug: UI error on agent spawn (2026-02-03 00:04)
+
+- **What:** Error in UI when spawning multiple subagents
+- **Observed:** Agents appear in sidebar and seem to run despite error
+- **Reproduce:** Spawn 3 agents in quick succession via sessions_spawn
+- **Priority:** Medium (doesn't block functionality)
+

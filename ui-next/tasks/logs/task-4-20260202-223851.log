@@ -1,0 +1,37 @@
+Task 4 is complete. Here's a summary of what was implemented:
+
+## Task 4: Inline Streaming Message Model - COMPLETE
+
+### Problem Solved
+The "double bubble" visual jump during streaming was caused by:
+1. A separate DOM element displayed streaming content
+2. On `final`, that element disappeared AND a new message was added
+3. This caused two DOM operations and a visual "jump"
+
+### Solution Implemented
+In `src/lib/session-store.ts`:
+
+1. **Added `streamingMessageId`** to `SessionData` interface to track which message is being streamed
+
+2. **Delta event handling:**
+   - First delta: Creates a placeholder message in the messages array with a `streaming-*` ID
+   - Subsequent deltas: Updates the existing message content in-place
+
+3. **Final event handling:**
+   - Finds the streaming message and updates it to final state
+   - Assigns a permanent `assistant-*` ID
+   - No add/remove operation - same message element persists
+
+4. **Abort handling:**
+   - Updates existing streaming message with `[Aborted]` suffix
+   - Persists to localStorage
+
+5. **Error handling:**
+   - Removes the streaming message (partial content shouldn't persist)
+   - Clears `streamingMessageId`
+
+### Result
+- Build passes
+- No DOM operations during streaming→final transition
+- Same message element is updated in place, eliminating visual jumps
+- localStorage persistence still works correctly

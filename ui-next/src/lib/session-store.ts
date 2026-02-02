@@ -16,6 +16,61 @@ import {
 } from "./storage";
 
 // =============================================================================
+// SESSION NAMING DEDUPLICATION
+// =============================================================================
+
+// Track in-flight naming requests to prevent duplicate calls
+const pendingNamingRequests = new Set<string>();
+
+// Debounce delay for naming (ms) - prevents rapid re-attempts
+const NAMING_DEBOUNCE_MS = 500;
+const namingDebounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+/**
+ * Request session naming with debouncing and deduplication.
+ * Returns immediately if a request is already pending for this session.
+ */
+function requestSessionNaming(
+  sessionKey: string,
+  userMessage: string,
+  assistantMessage: string | undefined
+): void {
+  console.log("[session-naming] requestSessionNaming called", { sessionKey, userMessage: userMessage.slice(0, 50) });
+
+  // Skip if already pending
+  if (pendingNamingRequests.has(sessionKey)) {
+    console.log("[session-naming] Skipping - already pending");
+    return;
+  }
+
+  // Clear any existing debounce timer
+  const existingTimer = namingDebounceTimers.get(sessionKey);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+  }
+
+  // Debounce the naming request
+  const timer = setTimeout(async () => {
+    console.log("[session-naming] Debounce fired, making API call");
+    namingDebounceTimers.delete(sessionKey);
+    pendingNamingRequests.add(sessionKey);
+
+    try {
+      const name = await generateSmartSessionName(userMessage, assistantMessage);
+      console.log("[session-naming] Got name:", name);
+      updateSessionLabel(sessionKey, name);
+    } catch (err) {
+      console.error("[session-naming] Error:", err);
+      updateSessionLabel(sessionKey, generateLabelFromContent(userMessage));
+    } finally {
+      pendingNamingRequests.delete(sessionKey);
+    }
+  }, NAMING_DEBOUNCE_MS);
+
+  namingDebounceTimers.set(sessionKey, timer);
+}
+
+// =============================================================================
 // TYPES
 // =============================================================================
 
@@ -349,6 +404,37 @@ function extractParts(message: unknown): MessagePart[] | undefined {
 }
 
 // =============================================================================
+// AI SESSION NAMING
+// =============================================================================
+
+/**
+ * Generate a smart session name using AI (Sonnet).
+ * Falls back to simple truncation if the API call fails.
+ */
+async function generateSmartSessionName(
+  userMessage: string,
+  assistantMessage?: string
+): Promise<string> {
+  try {
+    const response = await fetch("/api/generate-session-name", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userMessage, assistantMessage }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.name || generateLabelFromContent(userMessage);
+  } catch {
+    // Fall back to simple truncation
+    return generateLabelFromContent(userMessage);
+  }
+}
+
+// =============================================================================
 // STORE IMPLEMENTATION
 // =============================================================================
 
@@ -582,13 +668,15 @@ export const useSessionStore = create<SessionStore>()(
               timestamp: Date.now(),
             });
 
-            // Auto-name session
+            // Auto-name session with AI (debounced + deduplicated)
             const currentSess = getLocalSessions().find((s) => s.key === key);
+            console.log("[session-naming] Checking session:", { key, label: currentSess?.label, isGeneric: currentSess ? isGenericSessionLabel(currentSess.label) : false });
             if (currentSess && isGenericSessionLabel(currentSess.label)) {
               const allMsgs = get().sessions.get(key)?.messages ?? [];
               const firstUser = allMsgs.find((m) => m.role === "user");
+              console.log("[session-naming] First user message:", firstUser?.content?.slice(0, 50));
               if (firstUser?.content) {
-                updateSessionLabel(key, generateLabelFromContent(firstUser.content));
+                requestSessionNaming(key, firstUser.content, finalText);
               }
             }
 

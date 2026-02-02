@@ -241,8 +241,8 @@ return {
  * Required for tool events to emit on the agent stream.
  */
 async setVerboseLevel(sessionKey: string, level: "on" | "off"): Promise<void> {
-  return this.request("sessions.update", {
-    sessionKey,
+  return this.request("sessions.patch", {
+    key: sessionKey,
     verboseLevel: level,
   });
 }

@@ -1,0 +1,18 @@
+Task 1 is complete. Here's the summary:
+
+## Task 1 Complete: use-gateway.ts Audit
+
+**Audit findings for `src/lib/use-gateway.ts` (1335 lines):**
+
+| Category | Exports | Lines |
+|----------|---------|-------|
+| USED | `useGateway`, `useSessionStats` | ~160 |
+| DEPRECATED | `useOpenClawChat` | ~800 |
+| DUPLICATED | 5 types (MessagePart, etc.) | ~80 |
+| INTERNAL | 5 helper functions | ~200 |
+
+**Key finding:** `useOpenClawChat` has no external consumers — `page.tsx` uses `useSessionChat` from `use-session.ts` instead. The hook and its helpers (~800 lines) can be safely removed.
+
+**Cleanup potential:** File can shrink from 1335 → ~200 lines.
+
+**Output:** `tasks/AUDIT-use-gateway.md` contains the full audit with migration steps.

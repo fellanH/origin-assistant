@@ -27,6 +27,7 @@ interface ChatContextValue {
   messages: ChatMessage[];
   status: ChatStatus;
   streamingContent: string;
+  streamingMessageId: string | null; // ID of message being streamed inline
   error: string | null;
   historyLoading: boolean;
   historyLoaded: boolean;

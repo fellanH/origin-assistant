@@ -1,0 +1,22 @@
+Task 6 is complete. Here's a summary of what was built:
+
+## Task 6 Complete: ChatMessageList Component
+
+Created `src/components/chat-message-list.tsx` with smart animation strategy:
+
+**Key Features:**
+1. **Smart Animation** - Only new messages animate in, not history
+2. **Session Tracking** - Resets animation state on session switch
+3. **Uses ChatProvider** - Gets all data from context (messages, status, toolExecutions, subagents, etc.)
+4. **Memoized** - Prevents unnecessary re-renders
+5. **Complete States** - Handles loading, empty, streaming, thinking, and queued messages
+
+**Animation Strategy:**
+- Uses `initialLoadComplete` ref to track when history has loaded
+- Uses `previousMessageCount` ref to track message count at load time
+- Messages with `index >= previousMessageCount` animate in
+- History messages get `initial: false` (no animation)
+
+**Build passes** ✅
+
+The component is ready to be integrated into `page.tsx` to replace the current inline message rendering, which will significantly reduce the god component's size and improve the user experience by eliminating animation jumpiness on history load.

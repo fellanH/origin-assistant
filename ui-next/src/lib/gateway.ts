@@ -239,8 +239,8 @@ export class GatewayClient {
 		sessionKey: string,
 		level: "on" | "off",
 	): Promise<void> {
-		return this.request("sessions.update", {
-			sessionKey,
+		return this.request("sessions.patch", {
+			key: sessionKey,
 			verboseLevel: level,
 		});
 	}
@@ -250,14 +250,16 @@ export class GatewayClient {
 	 * Returns stats for a specific session key.
 	 */
 	async getSessionStats(sessionKey: string): Promise<SessionStats | null> {
+		// Use sessions.list with search filter to find the specific session
 		const result = await this.request<{ sessions: SessionStats[] }>(
 			"sessions.list",
 			{
-				keys: [sessionKey],
-				limit: 1,
+				search: sessionKey,
+				limit: 10,
 			},
 		);
-		return result.sessions?.[0] ?? null;
+		// Find exact match from results
+		return result.sessions?.find((s) => s.key === sessionKey) ?? null;
 	}
 }
 

@@ -1,36 +1,39 @@
 "use client";
 
-import {
-	useState,
-	useEffect,
-	useCallback,
-	useImperativeHandle,
-	forwardRef,
-	useMemo,
-} from "react";
-import { AnimatePresence, motion } from "motion/react";
-import {
-	PanelLeftCloseIcon,
-	PanelLeftOpenIcon,
-	PlusIcon,
-	RefreshCwIcon,
-	MessageSquareIcon,
-	XIcon,
-} from "lucide-react";
 import type { GatewayClient } from "@/lib/gateway";
-import {
-	getLocalSessions,
-	deleteLocalSession,
-	clearLocalSession,
-	type StoredSession,
-} from "@/lib/storage";
 import {
 	buildSessionTree,
 	type Session,
 	type SubagentMeta,
 } from "@/lib/session-utils";
-import { SessionTreeItem } from "./session-tree-item";
+import {
+	clearLocalSession,
+	deleteLocalSession,
+	getHiddenSessions,
+	getLocalSessions,
+	onSessionUpdate,
+	type StoredSession,
+} from "@/lib/storage";
 import { cn } from "@/lib/utils";
+import {
+	MessageSquareIcon,
+	PanelLeftCloseIcon,
+	PanelLeftOpenIcon,
+	PlusIcon,
+	RefreshCwIcon,
+	XIcon,
+} from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import {
+	forwardRef,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useState,
+} from "react";
+import { ExternalAgentsList } from "./external-agents-list";
+import { SessionTreeItem } from "./session-tree-item";
 
 // ============================================================================
 // LocalStorage key for expanded state
@@ -125,16 +128,21 @@ export const SessionSidebar = forwardRef<
 	const loadSessions = useCallback(async () => {
 		setLoading(true);
 		try {
+			// Get hidden sessions to filter out
+			const hiddenSessions = getHiddenSessions();
+
 			// Always load local sessions first
 			const localSessions = getLocalSessions();
-			const localMapped: Session[] = localSessions.map((s: StoredSession) => ({
-				key: s.key,
-				label: s.label,
-				createdAt: s.createdAt,
-				lastTurnAt: s.lastMessageAt,
-				messageCount: s.messageCount,
-				isLocal: true,
-			}));
+			const localMapped: Session[] = localSessions
+				.filter((s) => !hiddenSessions.has(s.key))
+				.map((s: StoredSession) => ({
+					key: s.key,
+					label: s.label,
+					createdAt: s.createdAt,
+					lastTurnAt: s.lastMessageAt,
+					messageCount: s.messageCount,
+					isLocal: true,
+				}));
 
 			// If connected, also try to get gateway sessions
 			if (client && connected) {
@@ -145,11 +153,20 @@ export const SessionSidebar = forwardRef<
 					}); // Last 7 days
 					const gatewaySessions = (result.sessions ?? []) as Session[];
 
-					// Merge: gateway sessions take precedence but keep local-only sessions
-					const gatewayKeys = new Set(gatewaySessions.map((s) => s.key));
+					// Filter out hidden sessions and merge
+					const localKeys = new Set(localMapped.map((s) => s.key));
 					const mergedSessions: Session[] = [
-						...gatewaySessions,
-						...localMapped.filter((s) => !gatewayKeys.has(s.key)),
+						// Gateway sessions (filtered), with isLocal flag added if they exist locally
+						...gatewaySessions
+							.filter((s) => !hiddenSessions.has(s.key))
+							.map((s) => ({
+								...s,
+								isLocal: localKeys.has(s.key) ? true : s.isLocal,
+							})),
+						// Local-only sessions (not on gateway)
+						...localMapped.filter(
+							(s) => !gatewaySessions.some((g) => g.key === s.key),
+						),
 					];
 
 					// Sort by last activity
@@ -188,6 +205,15 @@ export const SessionSidebar = forwardRef<
 		loadSessions();
 	}, [loadSessions]);
 
+	// Subscribe to session updates (e.g., label changes from AI naming)
+	useEffect(() => {
+		console.log("[sidebar] Subscribing to session updates");
+		return onSessionUpdate(() => {
+			console.log("[sidebar] Session update received, refreshing");
+			loadSessions();
+		});
+	}, [loadSessions]);
+
 	// Build tree from flat sessions
 	const sessionTree = useMemo(
 		() => buildSessionTree(sessions, subagentMeta),
@@ -215,7 +241,9 @@ export const SessionSidebar = forwardRef<
 				// If we deleted the current session, switch to another session or create new
 				if (sessionKey === currentSessionKey) {
 					// Find another session to switch to
-					const remainingSessions = sessions.filter((s) => s.key !== sessionKey);
+					const remainingSessions = sessions.filter(
+						(s) => s.key !== sessionKey,
+					);
 					if (remainingSessions.length > 0) {
 						// Switch to the most recent remaining session
 						onSessionSelect(remainingSessions[0].key);
@@ -298,8 +326,8 @@ export const SessionSidebar = forwardRef<
 					: "w-72 min-w-72 bg-card/50 border-r border-border/50",
 			)}
 		>
-			{/* Custom header slot (logo, status, settings) */}
-			{header}
+			{/* External agents (only shows when agents are running) */}
+			<ExternalAgentsList className="border-b border-border/50" />
 
 			{/* Sessions header */}
 			<div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
@@ -416,6 +444,9 @@ export const SessionSidebar = forwardRef<
 
 			{/* Custom footer slot (chat input) - only show if not in overlay mode or explicitly passed */}
 			{footer}
+
+			{/* Logo / brand bar (moved to bottom of sidebar) */}
+			{header}
 		</div>
 	);
 
