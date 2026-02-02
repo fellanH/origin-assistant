@@ -40,11 +40,13 @@ import { ThemeDropdown } from "@/components/theme-toggle";
 import { useBreakpoint } from "@/hooks/use-mobile";
 import type { SubagentMeta } from "@/lib/session-utils";
 import { createLocalSession, loadSettings, saveSettings } from "@/lib/storage";
+import { useGateway, useSessionStats } from "@/lib/use-gateway";
 import {
-	useGateway,
-	useOpenClawChat,
-	useSessionStats,
-} from "@/lib/use-gateway";
+	useSessionChat,
+	useSessionStoreSubscription,
+	useToolExecutionCleanup,
+	useSubagentPersistence,
+} from "@/lib/use-session";
 import {
 	AlertCircleIcon,
 	CheckIcon,
@@ -166,7 +168,10 @@ export default function ChatPage() {
 		}
 	}, [connectionError, showSettings]);
 
-	// Chat state
+	// Initialize session store WebSocket subscription (once at app level)
+	useSessionStoreSubscription(subscribe);
+
+	// Chat state (now backed by Zustand store with caching)
 	const {
 		messages,
 		status,
@@ -182,7 +187,11 @@ export default function ChatPage() {
 		historyLoading,
 		messageQueue,
 		queueLength,
-	} = useOpenClawChat(client, sessionKey, subscribe, handleMessageSent);
+	} = useSessionChat(client, sessionKey, subscribe, handleMessageSent);
+
+	// Cleanup hooks for tool executions and subagent persistence
+	useToolExecutionCleanup(sessionKey);
+	useSubagentPersistence(sessionKey);
 
 	// Session stats (token usage)
 	const { usedTokens, maxTokens, modelId, usage } = useSessionStats(
